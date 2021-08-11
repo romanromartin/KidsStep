@@ -11,9 +11,9 @@ import psycopg2
 from PIL import Image as ImagePIL
 from urllib.request import urlopen
 
-conn = psycopg2.connect(dbname='ddmn3cku08ub91', host='ec2-52-209-171-51.eu-west-1.compute.amazonaws.com', port='5432',
-                        user="wowkvlbbhgutme",
-                        password="75d7b66604e4225e5ca9c47b9ca932f373a91c8682e9bd2a460c0be033ea085a")
+conn = psycopg2.connect(dbname='d5peu9b3fqs423', host='ec2-44-196-146-152.compute-1.amazonaws.com', port='5432',
+                        user="lhwlclorbernre",
+                        password="5e9ba3c98c99ee19ed23d0e825a240d3e85be4fba2d44bf74abbc010a9f543a9")
 cur = conn.cursor()
 
 gender = Gender.objects.all()
