@@ -1,0 +1,42 @@
+{% extends "base_generic.html" %}
+{% load static %}
+
+{% block nav-tabs %}
+    <a class="nav-"  href="{% url 'index'  %}">Главная</a>
+
+{% endblock %}
+
+
+{% block content %}
+  <div class="col-sm-10 body_ ">
+    <p>search</p>
+      {% for pop in search %}
+            <a href="{% url 'footwear_detail' pop.footwear_gender.id_gender pop.footwear_type.id_type pop.id %}" >
+                <div class=" card_fw"  >
+                    <img class=" card_fw_image  " src=" /{{ pop.image }} " alt="Card image">
+                    <p class="card_fw_text"> {{ pop.name }}</p>
+                    <div style="margin-left: 10px; height:20px;" >
+                    <img src="{% static 'icons/arrows.svg' %}" alt="Favorite" style="width:30px; margin-right:5px;">
+                    {% for s in pop.size.all %}
+                        <p class="card_fw_size" > {{ s }}</p>
+                    {% endfor %}
+                    </div>
+
+                    <div class="color_block" >
+                        {% for col in pop.color.all %}
+                            <div class="color" style="background-color:{{ col }};"></div>
+                        {% endfor %}
+
+
+                    </div>
+                    <div class="card_fw_price_block">
+                       <p style="margin-top:5px;" >{{pop.price}} грн</p>
+                    </div>
+
+                </div>
+            </a>
+      {% endfor %}
+  </div>
+
+
+{% endblock %}

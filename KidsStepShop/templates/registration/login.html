@@ -1,0 +1,26 @@
+{% extends "base_generic.html" %}
+{% load static %}
+
+{% block nav-tabs %}
+    <a class="nav-"  href="{% url 'index'  %}">Главная</a>
+{% endblock %}
+
+
+{% block box %}
+    <div class=" center  "   style="padding-top:50px;" >
+        <div class="top text-center " style="width:50%; " >
+              <h4 style="color:white; "> Авторизация</h4> <br>
+              <form method="post"  >
+                {% csrf_token %}
+                  <p class=" login " >  {{ form.username }}  </p>
+                  <p class=" login " >  {{ form.password }}  </p>
+                  {% if form.errors %}
+                    <p class="error-text">Ваше имя пользователя и пароль не совпадают. Пожалуйста, попробуйте еще раз.</p>
+                  {% endif %}
+                  <input class=" submit" style="height:40px;; width:60%; margin:0px; border-radius:10px; "  type="submit" value="Войти" />
+              </form>
+              <a href="{% url 'password_reset' %}" style="display: block; color:white; margin-bottom:5px; margin-top:40px; ">Восстановить пароль </a>
+              <a href="{% url 'signup' %}" style="color:white;" >Регистрация</a>
+        </div>
+    </div>
+{% endblock %}

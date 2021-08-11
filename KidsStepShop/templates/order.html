@@ -1,0 +1,98 @@
+{% extends "base_generic.html" %}
+{% load static %}
+
+
+{% block nav-tabs %}
+    <a class="nav-"  href="{% url 'index'  %}">Главная</a>
+{% endblock %}
+
+
+
+
+{% block box %}
+
+    <div class="center" style="padding-top:50px;">
+        <div class="top text-center " style="width:80%; " >
+            <h4 style="color:white; "> Ваш заказ: </h4>
+                {% for prod in user_product %}
+                    <div class="row" style="background: rgba(70, 90, 200, 0.5); margin:0px; border-radius:5px;  color:orange;">
+                        <div class="col-md-1 " style="text-align:center; margin-top:10px; " >
+                            <p style="margin-bottom:0px;">{{ prod.product.id }} </p>  </div>
+                        <div class="col-md-1"  >  <img style="width:40px;"  src=" /{{ prod.product.image }} " alt="Order image" >  </div>
+                        <div class="col-md-7" style="text-align:center; margin-top:10px; " >  <a>{{ prod.product.name }} </a>     </div>
+                        <div class="col-md-1" style="background-color:{{  prod.color  }};" >  </div>
+                        <div class="col-md-1"  style="text-align:center; margin-top:10px; ">
+                            <a style="margin-bottom:0px;" >{{  prod.size }}</a></div>
+                        <div class="col-md-1" style="text-align:center; margin-top:5px; ">
+                            <p style="margin-bottom:0px; font-size:150%;" >{{  prod.product.price }}</p> </div>
+                    </div>
+                {% endfor %}
+
+            <h4 style="color:white; "> На сумму: <span style="color:orange;"> {{total}} грн. </span>  </h4>
+            <h4 style="color:white; "> Выберите опрератора доставки: </h4>
+            {% if name_delivery %}
+                {% if name_delivery == 'nova-poshta' %}
+                    <form method="post" >
+                    {% csrf_token %}
+                        <div style="margin-bottom:20px;">
+                            <input  class="delivery_operator"  type="submit"  name="name_delivery" value="nova-poshta"
+                                     style="background: url({% static 'logo/nova_poshta.webp' %}); background-size: 200px 54px;background-repeat: no-repeat;
+                                            background-position: center; border: 2px solid #323C8C; border-radius: 23px; " >
+                            <input   class="delivery_operator" type="submit"  name="name_delivery" value="ukrposhta"
+                                     style="background: url({% static 'logo/ukrposhta.webp' %}); background-size: 200px 54px;background-repeat: no-repeat;
+                                            background-position: center; " >
+                        </div>
+                        <p class="login" >
+                            <input    type="text" placeholder="Населенный пункт"  name="city-delivery" > </p>
+                        <p class="login" >
+                            <input    type="text" placeholder="Номер отделения"  name="department-delivery" > </p>
+                        {% if form_error != '' %} <a style="color:yellow; "> {{form_error}}  </a>  <br>  {% endif %}
+                        <button class="submit" style="height:40px;; width:60%; margin-top:10px; border-radius:10px; "
+                                type="submit" name="done" value="{{name_delivery}}">Подтвердить заказа</button>
+                    </form>
+
+                {% else %}
+                    <form method="post" >
+                    {% csrf_token %}
+                        <div style="margin-bottom:20px;">
+                            <input  class="delivery_operator"  type="submit"  name="name_delivery" value="nova-poshta"
+                                     style="background: url({% static 'logo/nova_poshta.webp' %}); background-size: 200px 54px;background-repeat: no-repeat;
+                                            background-position: center;  " >
+                            <input   class="delivery_operator" type="submit"  name="name_delivery" value="ukrposhta"
+                                     style="background: url({% static 'logo/ukrposhta.webp' %}); background-size: 200px 54px;background-repeat: no-repeat;
+                                            background-position: center; border: 2px solid #323C8C; border-radius: 23px;" >
+                        </div>
+                        <p class="login" >
+                            <input    type="text" placeholder="Населенный пункт"  name="city-delivery" > </p>
+                        <p class="login" >
+                            <input    type="text" placeholder="Индекс"  name="index-delivery" > </p>
+                        {% if form_error != '' %} <a style="color:yellow; "> {{form_error}}  </a>  <br>  {% endif %}
+                        <button class="submit" style="height:40px;; width:60%; margin-top:10px; border-radius:10px; "
+                                type="submit" name="done" value="{{name_delivery}}">Подтвердить заказа</button>
+                    </form>
+
+
+                {% endif %}
+
+            {% else %}
+                <form method="post" >
+                {% csrf_token %}
+                    <input  class="delivery_operator"  type="submit"  name="name_delivery" value="nova-poshta"
+                             style="background: url({% static 'logo/nova_poshta.webp' %}); background-size: 200px 54px;background-repeat: no-repeat;
+                                    background-position: center; " >
+                    <input   class="delivery_operator" type="submit"  name="name_delivery" value="ukrposhta"
+                             style="background: url({% static 'logo/ukrposhta.webp' %}); background-size: 200px 54px;background-repeat: no-repeat;
+                                    background-position: center; " >
+                    </form>
+            {% endif %}
+
+
+
+
+
+
+       </div>
+    </div>
+
+
+{% endblock %}

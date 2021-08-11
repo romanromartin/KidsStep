@@ -1,0 +1,25 @@
+{% extends "base_generic.html" %}
+{% load static %}
+
+
+{% block nav-tabs %}
+    <a class="nav-"  href="{% url 'index'  %}">Главная</a>
+{% endblock %}
+
+
+{% block box %}
+<div class="center" style="padding-top:50px;">
+    <div class="top text-center " style="width:80%; " >
+        <h3 style="color:white; margin-bottom:10px; "> Спасибо за ваш заказ! </h3>
+        <p style="color:orange; "> Номер вашего заказа {{article}}</p>
+        <p style="color:orange; "> Заказ на сумму: {{order.total_price}}</p>
+        <p style="color:orange; "> Доставка: {{order.delivery}}</p>
+        <p style="color:white; "> Скоро менеджер свяжется с Вами.</p>
+        <button class="submit" style="height:40px;; width:60%; margin-top:10px; border-radius:10px; "
+                type="button"  ><a href="{% url 'index' %}"
+                style=" text-decoration: none; color:#323C8C; ">Вернуться на главную</a> </button>
+    </div>
+
+</div>
+
+{% endblock %}

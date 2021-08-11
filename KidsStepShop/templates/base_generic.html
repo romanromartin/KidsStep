@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+<head>
+
+
+{% block title %}
+  <title>KidsStep</title>
+{% endblock %}
+
+  {% load static %}
+
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+        integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <link  href="https://cdnjs.cloudflare.com/ajax/libs/fotorama/4.6.4/fotorama.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fotorama/4.6.4/fotorama.js"></script>
+
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+  <style>
+        body {
+          background-image: url("{% static 'css/bg.webp' %}");
+        }
+
+    </style>
+
+</head>
+<body>
+
+    <div class="d-flex header container" >
+        <div>
+          <button class="but-header ">
+          <img src="{% static 'icons/menu-24px.svg' %}" alt="Menu" class="header-icon">
+          </button>
+        </div>
+        <div>
+           <button class="but-header ">
+           <a href="{% url 'index' %}" >
+            <img src="{% static 'logo/logo_KS_light.svg' %}" alt="Logo" class="header-icon">
+            <img src="{% static 'logo/logo_KS_text.svg' %}" alt="Logo" class="header-icon d-none d-md-inline" style="margin-left: 10px;">
+          </a>
+          </button>
+        </div>
+
+        <div class=" ml-auto">
+           {% if request.user.is_authenticated %}
+              <button class="but-header" type="button">
+                <img src="{% static 'icons/favorite.svg' %}" alt="Favorite" class="header-icon">
+                <span class="d-none d-md-inline " style="color: #fff;" >Favorite</span>
+              </button>
+
+              {% if request.user.is_staff %}
+                  <button class="but-header " type="button" >
+                        <a href="{% url 'profile' %}?next={{request.path}}" style=" text-decoration: none;">
+                             <img src="{% static 'icons/account.svg' %}" alt="Account" class="header-icon">
+                        </a>
+                        <a href="{% url 'managment' %}?next={{request.path}}" style=" text-decoration: none;">
+                            <img src="{% static 'icons/support_agent.svg' %}" alt="Account" class="header-icon">
+                            <span class="d-none d-md-inline " style="color: #fff;">{{ user.get_username }}</span>
+                        </a>
+                  </button>
+              {% else %}
+                  <button class="but-header " type="button" >
+                      <a href="{% url 'profile' %}?next={{request.path}}" style=" text-decoration: none;">
+                      <img src="{% static 'icons/account.svg' %}" alt="Account" class="header-icon">
+                      <span class="d-none d-md-inline " style="color: #fff;">{{ user.get_username }}</span>
+                  </a>
+                  </button>
+              {% endif %}
+                  <button class="but-header " type="button">
+                    <a href="{% url 'basket' %}?next={{request.path}}" style=" text-decoration: none;">
+                    <img src="{% static 'icons/shopping_cart.svg' %}" alt="Basket" class="header-icon">
+                  </a>
+                  </button>
+                   <button class="but-header " type="button">
+                     <a href="{% url 'logout' %}?next={{request.path}}" style=" text-decoration: none;">
+                        <img src="{% static 'icons/logout-24px.svg' %}" alt="Logout" class="header-icon">
+                    </a>
+                   </button>
+           {% else %}
+
+
+                <button class="but-header" type="button">
+                    <a href="{% url 'sign_in' %}?next={{request.path}}" style=" text-decoration: none;">
+                    <img src="{% static 'icons/favorite.svg' %}" alt="Favorite" class="header-icon">
+                    <span class="d-none d-md-inline " style="color: #fff;" >Favorite</span>
+                     </a>
+                </button>
+
+              <button class="but-header " type="button" >
+              <a href="{% url 'sign_in' %}?next={{request.path}}" style=" text-decoration: none;">
+                    <img src="{% static 'icons/account.svg' %}" alt="Account" class="header-icon">
+                    <span class="d-none d-md-inline " style="color: #fff;"  >Войти</span>
+              </a>
+              </button>
+
+                <button class="but-header " type="button">
+                <a href="{% url 'sign_in' %}?next={{request.path}}" style=" text-decoration: none;">
+                <img src="{% static 'icons/shopping_cart.svg' %}" alt="Basket" class="header-icon">
+                </a>
+                </button>
+          {% endif %}
+        </div>
+
+    </div>
+
+
+  <div class=" container " >
+
+      <div class="d-flex navigation "  >
+          {% block nav-tabs %}   {% endblock %}
+            <form method="post" action="{% url 'search' %}" class="flex-fill d-flex"   >
+                {% csrf_token %}
+                <input type="text"    name="search"  placeholder="Search" class=" flex-fill search "  >
+                <button type="submit"
+                        class="search-but"  ><img   src="{% static 'icons/search24.svg' %}" alt="Card image" style="height:27px;"></button>
+            </form>
+
+      </div>
+
+
+
+
+
+
+      <div class=" container"   >
+            {% if gender %}
+                <div class="row center" >
+                    <div class="col-sm-2 " >
+                            <br>
+                            {% for g in gender %}
+                                <a class="navigate_gender" href="{% url 'type' g.id_gender  %}">{{ g.gender }}</a> <br>
+                                {% for t in g.g_type.all %}
+
+                                    <a class="nav_type_point" href="{% url 'footwear' g.id_gender t.id_type %}">  --
+                                    <span class="navigate_type"> {{ t.type }} </span>
+                                    </a>
+                                    <br>
+
+                                {% endfor %}
+                            {% endfor %}
+                            {% block filter %} {% endblock %}
+
+
+
+
+
+
+                    </div>
+                {% block content %}  {% endblock %}
+
+                </div>
+            {% endif %}
+          {% block box %}  {% endblock %}
+
+
+      </div>
+  </div>
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

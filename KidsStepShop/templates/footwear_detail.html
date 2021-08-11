@@ -1,0 +1,50 @@
+{% extends "base_generic.html" %}
+{% load static %}
+
+
+{% block nav-tabs %}
+    <a class="nav-"  href="{% url 'index'  %}">Главная</a>
+    <img class="nav_arrow" src="{% static 'icons/nav_arrow.svg' %}" alt="Card image">
+        <a class="nav-" href="{% url 'type' nav_gender.id_gender  %}" >{{nav_gender.gender}}</a>
+    <img class="nav_arrow" src="{% static 'icons/nav_arrow.svg' %}" alt="Card image">
+        <a class="nav-"  href="{% url 'footwear' nav_gender.id_gender nav_type.id_type  %}" >{{nav_type.type}}</a>
+    <img class="nav_arrow" src="{% static 'icons/nav_arrow.svg' %}" alt="Card image">
+    <a class="nav-" id="active" >{{fw_sel.name}}</a>
+
+{% endblock %}
+
+
+{% block content %}
+    <div class="col-sm-7 " >
+        <div class="fotorama  "  data-transition="crossfade"
+             data-clicktransition="crossfade" data-nav="thumbs" style=" margin:10px; height: auto; width: 90%; " >
+            {%for im in fw_sel.image.all%}
+            <img src=" /{{ im.image }} " alt="Card image"  >
+            {%endfor%}
+        </div>
+
+    </div>
+    <div class="col-sm-3 " style="color:white; text-shadow: 0px 0px 10px rgba(20, 30, 100, 0.7);" >
+        <p style="margin-top:60px;"> {{ fw_sel.name }}</p>
+        <h2> {{ fw_sel.price }} грн </h2>
+        <form method="post" >
+            {% csrf_token %}
+            <a style="color:orange;"> Размер  </a> <br>
+                <div class="radio">
+                {% for size in fw_sel.size.all %}
+                    <input label={{ size }}  type="radio" id="{{ size }}" name="size" value="{{ size }}" >
+
+                {% endfor %}
+                </div>
+            <br>
+
+
+
+            {% if form_error != '' %} <a style="color: yellow"> {{form_error}}  </a>  <br>  {% endif %}
+
+            <button class="submit" type="submit">Добавить в корзину</button>
+        </form>
+
+    </div>
+
+{% endblock %}

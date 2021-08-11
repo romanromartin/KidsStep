@@ -1,0 +1,99 @@
+{% extends "base_generic.html" %}
+{% load static %}
+
+
+{% block nav-tabs %}
+    <a class="nav-"  href="{% url 'index'  %}">Главная</a>
+{% endblock %}
+
+{% block box %}
+
+    <div class="center">
+        {% for or in orders %}
+            <div class="product" style="margin-right:5px; padding-top:5px;">
+                <form method="post" > {% csrf_token %}
+                <div class="row manage_header_card " >
+                    <div class="col-md-1"   >
+                        <p class="status_toggle" >{{ or.article }} </p>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="dropdown" >
+                            <button type="button" class=" status_toggle dropdown-toggle" data-toggle="dropdown" style="">
+                                Статус: {{ or.status }}
+                                    </button>
+                            <div class=" dropdown-menu" style="background: rgba(70, 90, 200, 0.7);" >
+                                {% for status in stat %}
+                                    <input class="status_toggle_item dropdown-item" style="" type="submit" name="change_status" value="{{status}}" >
+                                {% endfor %}
+                                <input  type="hidden" name="order_id" value="{{or.id_order}}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="status_toggle">Адрес: {{ or.delivery }}</p>
+                    </div>
+
+                    <div class="col-md-1">
+                        <input class="delete"  type="submit"
+                                           style= "background-image: url({% static 'icons/delete.svg' %});"
+                                           name="delete_order" value="{{ or.id_order }}" >
+                    </div>
+                </div>
+                <div class="row " style="margin-left:0px; margin-right:0px;" >
+                    <div class="col-md-3" style="font-size:130%; " >
+                        <p style="margin-bottom:0px; color:white;"> <img src="{% static 'icons/account.svg' %}" alt="Account" class="manage_icon">
+                            {{ or.user_order }} </p>
+                        {% for us in users  %}
+                            {% if us.username == or.user_order %}
+                                <p style="margin-bottom:0px; color:white;">
+                                    <img src="{% static 'icons/badge.svg' %}" alt="Account" class="manage_icon">
+                                    {{us.first_name}} </p>
+                                <p style="margin-bottom:0px; font-size:80%; color:white;">
+                                    <img src="{% static 'icons/email.svg' %}" alt="Account" class="manage_icon">
+                                    {{us.email}} </p>
+
+                                {% for pro in prof %}
+                                    {% if us.id == pro.user_id %}
+                                        <p style="margin-bottom:0px; color:white;">
+                                            <img src="{% static 'icons/call.svg' %}" alt="Account" class="manage_icon">
+                                            {{ pro.phone  }} </p>
+                                    {% endif %}
+                                {% endfor %}
+
+                            {% endif %}
+                        {% endfor %}
+
+                    </div>
+                    <div class="col-md-8">
+                        {% for prod in or.product.all %}
+                            <div class="row" style="background: rgba(70, 90, 200, 0.5); margin-bottom:3px; border-radius:5px; ">
+                                <div class="col-md-1 " style="text-align:center; margin-top:10px; color:white;" >
+                                        <p style="margin-bottom:0px;">{{ prod.product.id }} </p>  </div>
+                                <div class="col-md-1"  >  <img style="width:40px;"  src=" /{{ prod.product.image }} " alt="Order image" >  </div>
+                                <div class="col-md-7" style="color:white; margin-top:10px;" >  <a>{{ prod.product.name }} </a>     </div>
+                                <div class="col-md-1"  style="text-align:center; margin-top:10px; ">
+                                        <a style="margin-bottom:0px; color:white;" >{{  prod.size }}</a></div>
+                                <div class="col-md-1" style="text-align:center; margin-top:5px; ">
+                                        <a style="margin-bottom:0px; font-size:150%; color:white;" >{{  prod.product.price }}</a> </div>
+                                <div class="col-md-1"  >
+                                    <input class="delete"  type="submit"
+                                           style= "background-image: url({% static 'icons/delete.svg' %}); margin-top:5px;"
+                                           name="delete" value="{{ prod.id_product }}" >
+                                    <input  type="hidden" name="order_id" value="{{or.id_order}}">
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="col-md-1 manage_total_price" style="">
+                            <p style="font-size:60%; margin-top:20px; margin-bottom:0px;" >Итого </p>
+                            <p >{{ or.total_price }}</p>
+                    </div>
+                </div>
+            </form>
+
+            </div>
+        {% endfor %}
+    </div>
+
+
+{% endblock %}

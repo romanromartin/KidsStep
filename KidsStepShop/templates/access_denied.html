@@ -1,0 +1,15 @@
+{% extends "base_generic.html" %}
+{% load static %}
+
+{% block nav-tabs %}
+    <a class="nav-"  href="{% url 'index'  %}">Главная</a>
+{% endblock %}
+
+{% block box %}
+    <div class=" center  "   style="padding-top:50px;" >
+        <div class="top text-center " style="width:50%; " >
+            <h4 style="color:white; "> Отказано в доступе</h4> <br>
+            <img src="{% static 'icons/delete.svg' %}" style="width:100px;">
+        </div>
+    </div>
+{% endblock %}

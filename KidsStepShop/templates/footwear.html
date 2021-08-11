@@ -1,0 +1,43 @@
+{% extends "base_generic.html" %}
+{% load static %}
+
+{% block nav-tabs %}
+    <a class="nav-"  href="{% url 'index'  %}">Главная</a>
+    <img class="nav_arrow" src="{% static 'icons/nav_arrow.svg' %}" alt="Card image">
+        <a class="nav-" href="{% url 'type' nav_gender.id_gender  %}" >{{nav_gender.gender}}</a>
+    <img class="nav_arrow" src="{% static 'icons/nav_arrow.svg' %}" alt="Card image">
+        <a class="nav-"  id="active" >{{nav_type.type}}</a>
+{% endblock %}
+
+{% block filter %}
+    <a class="navigate_gender">Фильтровать</a>
+    <a class="nav_type_point">  --<span class="navigate_type"> Размер </span></a>
+{% endblock %}
+
+
+
+{% block content %}
+    <div class="col-sm-10 body_ ">
+        {% if footwear_selected %}
+            {% for f in footwear_selected  %}
+                <a href="{% url 'footwear_detail' nav_gender.id_gender nav_type.id_type f.id %}" >
+                <div class=" card_fw"  >
+                    <img class=" card_fw_image  " src=" /{{ f.image.first.image }} " alt="Card image">
+                    <p class="card_fw_text"> {{ f.name }}</p>
+                    <div style="margin-left: 10px; height:20px;" >
+                    {% for s in f.size.all %}
+                        <p class="card_fw_size" > {{ s }}</p>
+                    {% endfor %}
+                    </div>
+                    <div class="card_fw_price_block">
+                       <p style="margin-top:5px;" >{{f.price}} грн</p>
+                    </div>
+
+                </div>
+            </a>
+            {%  endfor %}
+        {% else %}
+            <h4>There is no footwear this type. Choose another</h4>
+        {% endif %}
+    </div>
+{% endblock %}
