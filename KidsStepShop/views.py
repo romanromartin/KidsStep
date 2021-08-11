@@ -7,8 +7,14 @@ from KidsStepShop.forms import SignUpForm, LogInForm, ResetPasswordForm
 from django.conf import settings
 import random
 import os
+import psycopg2
 from PIL import Image as ImagePIL
 from urllib.request import urlopen
+
+conn = psycopg2.connect(dbname='ddmn3cku08ub91', host='ec2-52-209-171-51.eu-west-1.compute.amazonaws.com', port='5432',
+                        user="wowkvlbbhgutme",
+                        password="75d7b66604e4225e5ca9c47b9ca932f373a91c8682e9bd2a460c0be033ea085a")
+cur = conn.cursor()
 
 gender = Gender.objects.all()
 types = Type.objects.all()
@@ -253,21 +259,34 @@ def search(request):
 def db_hendler(request):
     if request.method == 'POST':
         if request.POST.get("refresh_ge_ty"):
-
+            query_clear = 'TRUNCATE TABLE "KidsStepShop_gender" CASCADE; ' \
+                          'TRUNCATE TABLE "KidsStepShop_type" CASCADE; ' \
+                          'TRUNCATE TABLE "KidsStepShop_typeprw" CASCADE; '
+            cur.execute(query_clear)
+            conn.commit()
             Gender.objects.all().delete()
             Type.objects.all().delete()
             TypePrw.objects.all().delete()
             for t in type_dict:
+                query_add_type = 'INSERT INTO "KidsStepShop_type" ( "id_type", "type") ' \
+                                 + "VALUES ('" + t + "', '" + type_dict[t] + "');"
+                cur.execute(query_add_type)
+                conn.commit()
                 type = Type()
                 type.id_type = t
                 type.type = type_dict[t]
                 type.save()
             for g in gender_dict:
+                query_add_gender = 'INSERT INTO "KidsStepShop_gender" ( "id_gender", "gender") ' \
+                                 + "VALUES ('" + g + "', '" + gender_dict[g] + "');"
+                cur.execute(query_add_gender)
+                conn.commit()
                 gender = Gender()
                 gender.id_gender = g
                 gender.gender = gender_dict[g]
                 gender.save()
                 for t in Type.objects.all():
+                    img = ''
                     prw = TypePrw()
                     prw.prw_gender = Gender.objects.get(id_gender=g)
                     prw.prw_type = Type.objects.get(id_type=t.id_type)
@@ -276,40 +295,74 @@ def db_hendler(request):
                         if len(pr.split('.')[0].split('-')) < 2:
                             continue
                         if pr.split('.')[0].split('-')[1] == g and pr.split('.')[0].split('-')[0] == t.id_type:
-                            prw.prw_image = 'static/media/images/' + pr
+                            img = 'static/media/images/' + pr
                             break
                         else:
-                            prw.prw_image = 'static/media/images/default.webp'
+                            img = 'static/media/images/default.webp'
+                    prw.prw_image = img
                     prw.save()
+                    query_add_typeprw = 'INSERT INTO "KidsStepShop_typeprw" ( "prw_image", "prw_gender_id", "prw_type_id") ' \
+                                       + "VALUES ('" + img + "', '" + g + "', '" + t.id_type  + "');"
+                    cur.execute(query_add_typeprw)
+                    conn.commit()
+
 
         elif request.POST.get("refresh_size"):
+            query_clear = 'TRUNCATE TABLE "KidsStepShop_size" CASCADE; '
+            cur.execute(query_clear)
+            conn.commit()
             Size.objects.all().delete()
             for s in range(1, 46):
+                query_add_size = 'INSERT INTO "KidsStepShop_size" ("" "size") ' + "VALUES ('" + str(s) + "');"
+                cur.execute(query_add_size)
+                conn.commit()
                 size = Size()
                 size.size = s
                 size.save()
         elif request.POST.get("refresh_adv_slider"):
+            query_clear = 'TRUNCATE TABLE "KidsStepShop_advslider";'
+            cur.execute(query_clear)
+            conn.commit()
             AdvSlider.objects.all().delete()
             dir_adv = os.listdir('static/media/adv_slider/')
             for adv in dir_adv:
                 if adv == 'default.webp':
                     continue
+                query_add_adv = 'INSERT INTO "KidsStepShop_advslider" ( "adv_image") ' \
+                                + "VALUES ('" + 'static/media/adv_slider/' + adv + "');"
+                cur.execute(query_add_adv)
+                conn.commit()
                 advert = AdvSlider()
                 advert.adv_image = 'static/media/adv_slider/' + adv
                 advert.save()
         elif request.POST.get("refresh_color"):
+            query_clear = 'TRUNCATE TABLE "KidsStepShop_color" CASCADE;'
+            cur.execute(query_clear)
+            conn.commit()
             Color.objects.all().delete()
             for c in color_dict:
+                query_add_color = 'INSERT INTO "KidsStepShop_color" ( "name_color") ' + "VALUES ('" + color_dict[c] + "');"
+                cur.execute(query_add_color)
+                conn.commit()
                 col = Color()
                 col.name_color = color_dict[c]
                 col.save()
         elif request.POST.get("refresh_footwear"):
+            query_clear = 'TRUNCATE TABLE "KidsStepShop_footwear" CASCADE; ' \
+                          'TRUNCATE TABLE "KidsStepShop_brend" CASCADE; ' \
+                          'TRUNCATE TABLE "KidsStepShop_image" CASCADE;' \
+                          'TRUNCATE TABLE "KidsStepShop_gender_g_type";'
+            cur.execute(query_clear)
+            conn.commit()
             Footwear.objects.all().delete()
             Brend.objects.all().delete()
             Image.objects.all().delete()
             for g in Gender.objects.all():
                 g.g_type.clear()
             for b in add_vendor():
+                query_add_brend = 'INSERT INTO "KidsStepShop_brend" ( "brend") ' + "VALUES ('" + b + "');"
+                cur.execute(query_add_brend)
+                conn.commit()
                 br = Brend()
                 br.brend = b
                 br.save()
@@ -392,6 +445,19 @@ def add_footwear():
                         ins_type = 'other'
 
             id_ = supplier['berni.com.ua'] + of.attrib['id']
+            query_id = 'SELECT id FROM "KidsStepShop_brend" WHERE "brend" = ' + "'" + of.find('vendor').text + "';"
+            cur.execute(query_id )
+            qq = cur.fetchone()[0]
+            query_add_footwear = 'INSERT INTO "KidsStepShop_footwear" ' \
+                                 '( "id", "name", "popular", "price", "footwear_brend_id", "footwear_type_id") ' \
+                                 + "VALUES ('" + id_ + "', '" \
+                                 + of.find('name').text + "', '" \
+                                 + '0' + "', '" \
+                                 + of.find('oldprice').text + "', '" \
+                                 + str(qq) + "', '" \
+                                 + ins_type + "');"
+            cur.execute(query_add_footwear)
+            conn.commit()
             foot = Footwear()
             foot.id = id_
             foot.name = of.find('name').text
@@ -402,23 +468,42 @@ def add_footwear():
             foot.save()
 
             for gen in gender_list:
+                cur.execute('SELECT * FROM "KidsStepShop_gender_g_type" WHERE "gender_id" =  ' + "'" + gen + "'" ' AND "type_id" = ' + "'" + ins_type + "';")
+                qq = cur.fetchone()
+                if not qq:
+                    query_add_gender_type = 'INSERT INTO "KidsStepShop_gender_g_type" ( "gender_id", "type_id") ' \
+                                            + "VALUES ('" + gen + "', '" + ins_type + "');"
+                    cur.execute(query_add_gender_type)
+                    conn.commit()
                 gen_type = Gender.objects.get(id_gender=gen)
                 gen_type.g_type.add(Type.objects.get(id_type=ins_type))
                 foot.footwear_gender.add(gen)
-            for si in size_list:
-                foot.size.add(Size.objects.get(size=si))
-            for co in color_list:
-                foot.color.add(Color.objects.get(name_color=color_dict[co]))
+                query_add_footwear_gender = 'INSERT INTO "KidsStepShop_footwear_footwear_gender" ( "footwear_id", "gender_id") ' \
+                                            + "VALUES ('" + id_ + "', '" + gen + "');"
+                cur.execute(query_add_footwear_gender)
+                conn.commit()
+            # for si in size_list:
+            #     cur.execute(
+            #         'SELECT * FROM "KidsStepShop_footwear_size" WHERE "footwear_id" =  ' + "'" + id_ + "'" ' AND "size_id" = ' + "'" + si + "';")
+            #     qq = cur.fetchone()
+            #     if not qq:
+            #         query_add_footwear_size = 'INSERT INTO "KidsStepShop_footwear_size" ( "footwear_id", "size_id") ' \
+            #                                   + "VALUES ('" + id_ + "', '" + si + "');"
+            #         cur.execute(query_add_footwear_size)
+            #         conn.commit()
+            #     foot.size.add(Size.objects.get(size=si))
+            # for co in color_list:
+            #     foot.color.add(Color.objects.get(name_color=color_dict[co]))
 
-            imid = 1
-            pic_list = []
-            for pic in of.findall('picture'):
-                img = ImagePIL.open(urlopen(pic.text))
-                save_path = 'static/media/footwear/' + of.attrib['id'] + '-' + str(imid) + '.webp'
-                pic_list.append(save_path)
-                # img.save(save_path)
-                image = Image()
-                image.image = save_path
-                image.save()
-                foot.image.add(Image.objects.get(image=save_path))
-                imid += 1
+            # imid = 1
+            # pic_list = []
+            # for pic in of.findall('picture'):
+            #     img = ImagePIL.open(urlopen(pic.text))
+            #     save_path = 'static/media/footwear/' + of.attrib['id'] + '-' + str(imid) + '.webp'
+            #     pic_list.append(save_path)
+            #     # img.save(save_path)
+            #     image = Image()
+            #     image.image = save_path
+            #     image.save()
+            #     foot.image.add(Image.objects.get(image=save_path))
+            #     imid += 1

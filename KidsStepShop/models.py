@@ -12,14 +12,16 @@ fs = FileSystemStorage(location='/media/images')
 
 
 class Color(models.Model):
-    name_color = models.CharField(primary_key=True, max_length=15)
+    id_color = models.CharField(primary_key=True,  max_length=15, auto_created=True)
+    name_color = models.CharField( max_length=15)
 
     def __str__(self):
         return self.name_color
 
 
 class Size(models.Model):
-    size = models.CharField(primary_key=True, max_length=10)
+    id_size = models.CharField(primary_key=True, max_length=10, auto_created=True)
+    size = models.CharField(max_length=10)
 
     def __str__(self):
         return self.size
@@ -103,6 +105,7 @@ class Footwear(models.Model):
 
 
 class Image(models.Model):
+    id_image = models.CharField(primary_key=True, max_length=15, auto_created=True)
     image = models.ImageField(upload_to='static/media/footwear', default='static/media/footwear/default.webp')
 
 
