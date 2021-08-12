@@ -20,16 +20,32 @@
         </div>
 
         {% for pop in popular %}
-            {% for gen in pop.footwear_gender.all %}
-                <a href="{% url 'footwear_detail' gen.id_gender pop.footwear_type.id_type pop.id %}" >
+
+                <a href="{% url 'footwear_detail' pop.footwear_gender.first.id_gender pop.footwear_type.id_type pop.id %}" >
                     <div class=" card_fw"  >
+                        <div style="height:180px;">
                         <img class=" card_fw_image  " src=" /{{ pop.image.first.image }} " alt="Card image">
+                        </div>
                         <p class="card_fw_text"> {{ pop.name }}</p>
                         <div style="margin-left: 10px; height:20px;" >
                         {% for s in pop.size.all %}
                             <p class="card_fw_size" > {{ s }}</p>
                         {% endfor %}
                         </div>
+                        <div class="color_block" >
+                            {% for g in pop.footwear_gender.all %}
+
+                                {% if g.id_gender == 'girl'%}
+                                <img style="height:30px;" src="{% static 'icons/girl.svg' %}" alt="Card image">
+                                {% elif g.id_gender == 'boy'%}
+                                <img style="height:30px;"  src="{% static 'icons/boy.svg' %}" alt="Card image">
+
+                                {% endif %}
+                            {% endfor %}
+
+                        </div>
+
+
 
                         <div class="card_fw_price_block">
                            <p style="margin-top:5px;" >{{pop.price}} грн</p>
@@ -37,7 +53,7 @@
 
                     </div>
                 </a>
-            {% endfor %}
+
         {% endfor %}
     </div>
 {% endblock %}

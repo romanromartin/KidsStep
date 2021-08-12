@@ -22,7 +22,9 @@
             {% for f in footwear_selected  %}
                 <a href="{% url 'footwear_detail' nav_gender.id_gender nav_type.id_type f.id %}" >
                 <div class=" card_fw"  >
+                    <div style="height:180px;">
                     <img class=" card_fw_image  " src=" /{{ f.image.first.image }} " alt="Card image">
+                    </div>
                     <p class="card_fw_text"> {{ f.name }}</p>
                     <div style="margin-left: 10px; height:20px;" >
                     {% for s in f.size.all %}

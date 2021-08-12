@@ -32,10 +32,9 @@ color_dict = {'Черный': 'black', 'Фиолетовый': 'violet', 'Хак
               'Бирюзовый': 'turquoise', 'Белый': 'white', 'Бежевый': 'beige', 'Золотой': 'gold'}
 
 
-
-
 def index(request):
     fw_pop = Footwear.objects.all().order_by('-popular')[:30]
+
     adv = AdvSlider.objects.all()
     return render(request, 'index.html', context={'gender': gender, 'popular': fw_pop, 'adv': adv})
 
@@ -56,6 +55,8 @@ def footwear(request, id_gender, id_type):
 def footwear_detail(request, id_gender, id_type, id):
     err = ''
     fw_sel = Footwear.objects.get(id=id)
+    fw_sel.popular += 1
+    fw_sel.save()
     if request.method == 'POST':
         if request.user.is_authenticated:
             if request.POST.get("size") is None:

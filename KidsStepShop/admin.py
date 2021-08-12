@@ -25,8 +25,8 @@ class BrendAdmin(admin.ModelAdmin):
 
 @admin.register(Footwear)
 class FootwearAdmin(admin.ModelAdmin):
-    list_display = ('name', 'get_gender', 'footwear_type', 'footwear_brend', 'id',  'get_colors', 'get_size', 'price')
-    list_filter = ('footwear_type', 'footwear_brend')
+    list_display = ('name', 'get_gender', 'footwear_type', 'footwear_brend', 'id',  'get_colors', 'get_size', 'price', 'popular')
+    list_filter = ('footwear_type', 'footwear_brend','footwear_gender')
 #     fields = ['id', 'name', ('footwear_gender', 'footwear_type'), 'footwear_brend','price', 'color', 'size', 'popular']
 #     # readonly_fields = ['image_tag', 'image_tag_side', 'image_tag_top', 'image_tag_scale']
 #
