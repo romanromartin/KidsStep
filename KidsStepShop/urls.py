@@ -15,7 +15,7 @@ urlpatterns = [
     path('order', views.order, name='order'),
     path('search', views.search, name='search'),
     path('order_done/<article>', views.order_done, name='order_done'),
-    path('db_hendler', views.db_hendler, name='db_hendler'),
+    path('db_handler', views.db_handler, name='db_handler'),
 
     re_path('managment', views.managment, name='managment'),
 

@@ -27,18 +27,20 @@
     <div class="col-sm-3 " style="color:white; text-shadow: 0px 0px 10px rgba(20, 30, 100, 0.7);" >
         <p style="margin-top:60px;"> {{ fw_sel.name }}</p>
         <h2> {{ fw_sel.price }} грн </h2>
+
         <form method="post" >
             {% csrf_token %}
             <a style="color:orange;"> Размер  </a> <br>
                 <div class="radio">
                 {% for size in fw_sel.size.all %}
-                    <input label={{ size }}  type="radio" id="{{ size }}" name="size" value="{{ size }}" >
+                    <input label={{ size }}  type="radio" id="{{ size }}" name="size" value="{{ size }}"  style="margin-bottom:3px;">
 
                 {% endfor %}
+
                 </div>
-            <br>
 
 
+            <a style=" font-weight: normal;"> Артикул {{fw_sel.id}}</a>
 
             {% if form_error != '' %} <a style="color: yellow"> {{form_error}}  </a>  <br>  {% endif %}
 

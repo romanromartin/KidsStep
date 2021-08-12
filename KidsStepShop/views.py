@@ -20,7 +20,7 @@ gender = Gender.objects.all()
 types = Type.objects.all()
 
 supplier = {'berni.com.ua': 'b-'}
-gender_dict = {'girl': 'Для девочек', 'boy': 'Для мальчиков', 'baby': 'Для малышей'}
+gender_dict = {'girl': 'Для девочек', 'boy': 'Для мальчиков'}
 type_dict = {'boots': 'Ботинки', 'shoes': 'Туфли', 'sneakers': 'Кроссовки', 'high_boots': 'Сапоги',
              'sandals': 'Сандалии', 'moccasins': 'Мокасины', 'low_shoes': 'Полуботинки', 'ankle_boots': 'Ботильоны',
              'rubber_boots': 'Резиновые сапоги', 'clogs': 'Сабо', 'slates': 'Сланцы', 'slipons': 'Слипоны',
@@ -35,7 +35,7 @@ color_dict = {'Черный': 'black', 'Фиолетовый': 'violet', 'Хак
 
 
 def index(request):
-    fw_pop = Footwear.objects.all().order_by('-popular')
+    fw_pop = Footwear.objects.all().order_by('-popular')[:30]
     adv = AdvSlider.objects.all()
     return render(request, 'index.html', context={'gender': gender, 'popular': fw_pop, 'adv': adv})
 
@@ -256,7 +256,7 @@ def search(request):
     return render(request, 'search.html', context={'search': s_f, 'gender': gender, 'types': types, })
 
 
-def db_hendler(request):
+def db_handler(request):
     if request.method == 'POST':
         if request.POST.get("refresh_ge_ty"):
             query_clear = 'TRUNCATE TABLE "KidsStepShop_gender" CASCADE; ' \
@@ -313,10 +313,12 @@ def db_hendler(request):
             conn.commit()
             Size.objects.all().delete()
             for s in range(1, 46):
-                query_add_size = 'INSERT INTO "KidsStepShop_size" ("" "size") ' + "VALUES ('" + str(s) + "');"
+                query_add_size = 'INSERT INTO "KidsStepShop_size" ("id_size", "size") ' \
+                                 + "VALUES ('" + str(s) + "', '" + str(s) + "');"
                 cur.execute(query_add_size)
                 conn.commit()
                 size = Size()
+                size.id_size = s
                 size.size = s
                 size.save()
         elif request.POST.get("refresh_adv_slider"):
@@ -340,13 +342,16 @@ def db_hendler(request):
             cur.execute(query_clear)
             conn.commit()
             Color.objects.all().delete()
+            query_add_color = ''
             for c in color_dict:
-                query_add_color = 'INSERT INTO "KidsStepShop_color" ( "name_color") ' + "VALUES ('" + color_dict[c] + "');"
-                cur.execute(query_add_color)
-                conn.commit()
+                query_add_color += 'INSERT INTO "KidsStepShop_color" ("id_color", "name_color") ' \
+                                  + "VALUES ('" + color_dict[c] + "', '" + color_dict[c] + "');"
                 col = Color()
+                col.id_color = color_dict[c]
                 col.name_color = color_dict[c]
                 col.save()
+            cur.execute(query_add_color)
+            conn.commit()
         elif request.POST.get("refresh_footwear"):
             query_clear = 'TRUNCATE TABLE "KidsStepShop_footwear" CASCADE; ' \
                           'TRUNCATE TABLE "KidsStepShop_brend" CASCADE; ' \
@@ -359,27 +364,16 @@ def db_hendler(request):
             Image.objects.all().delete()
             for g in Gender.objects.all():
                 g.g_type.clear()
+            query_vendor = ''
             for b in add_vendor():
-                query_add_brend = 'INSERT INTO "KidsStepShop_brend" ( "brend") ' + "VALUES ('" + b + "');"
-                cur.execute(query_add_brend)
-                conn.commit()
+                query_vendor += 'INSERT INTO "KidsStepShop_brend" ( "brend") ' + "VALUES ('" + b + "'); "
                 br = Brend()
                 br.brend = b
                 br.save()
+            cur.execute(query_vendor)
+            conn.commit()
             add_footwear()
-
-
-
-
-
-
-
-
-        elif request.POST.get("delete_gender"):
-            Gender.objects.all().delete()
-        elif request.POST.get("delete_type"):
-            Type.objects.all().delete()
-    return render(request, 'db_hendler.html')
+    return render(request, 'db_handler.html')
 
 
 id_cat = []
@@ -396,8 +390,7 @@ def add_vendor():
     for category in cat:
         id_cat.append(category.attrib["id"])
     for id_ in id_cat:
-        path = "shop/offers/offer[categoryId='" + id_ + "']"
-        offer = tree.findall(path)
+        offer = tree.findall("shop/offers/offer[categoryId='" + id_ + "']")
         for of in offer:
             if not of.find('vendor').text in brend_list:
                 brend_list.append(of.find('vendor').text)
@@ -406,13 +399,11 @@ def add_vendor():
 
 def add_footwear():
     id_cat = []
-    brend_list = []
     for category in cat:
         id_cat.append(category.attrib["id"])
     for id_ in id_cat:
-        path = "shop/offers/offer[categoryId='" + id_ + "']"
-        offer = tree.findall(path)
-        for of in offer[:3]:
+        offer = tree.findall("shop/offers/offer[categoryId='" + id_ + "']")
+        for of in offer[:10]:
             gender_list = []
             size_list = []
             color_list = []
@@ -444,20 +435,19 @@ def add_footwear():
                     else:
                         ins_type = 'other'
 
+            query_add = ''
             id_ = supplier['berni.com.ua'] + of.attrib['id']
             query_id = 'SELECT id FROM "KidsStepShop_brend" WHERE "brend" = ' + "'" + of.find('vendor').text + "';"
-            cur.execute(query_id )
+            cur.execute(query_id)
             qq = cur.fetchone()[0]
-            query_add_footwear = 'INSERT INTO "KidsStepShop_footwear" ' \
+            query_add += 'INSERT INTO "KidsStepShop_footwear" ' \
                                  '( "id", "name", "popular", "price", "footwear_brend_id", "footwear_type_id") ' \
                                  + "VALUES ('" + id_ + "', '" \
                                  + of.find('name').text + "', '" \
                                  + '0' + "', '" \
                                  + of.find('oldprice').text + "', '" \
                                  + str(qq) + "', '" \
-                                 + ins_type + "');"
-            cur.execute(query_add_footwear)
-            conn.commit()
+                                 + ins_type + "'); "
             foot = Footwear()
             foot.id = id_
             foot.name = of.find('name').text
@@ -468,42 +458,42 @@ def add_footwear():
             foot.save()
 
             for gen in gender_list:
-                cur.execute('SELECT * FROM "KidsStepShop_gender_g_type" WHERE "gender_id" =  ' + "'" + gen + "'" ' AND "type_id" = ' + "'" + ins_type + "';")
+                cur.execute('SELECT * FROM "KidsStepShop_gender_g_type" WHERE "gender_id" =  '
+                            + "'" + gen + "'" + ' AND "type_id" = ' + "'" + ins_type + "';")
                 qq = cur.fetchone()
                 if not qq:
-                    query_add_gender_type = 'INSERT INTO "KidsStepShop_gender_g_type" ( "gender_id", "type_id") ' \
-                                            + "VALUES ('" + gen + "', '" + ins_type + "');"
-                    cur.execute(query_add_gender_type)
-                    conn.commit()
+                    query_add += 'INSERT INTO "KidsStepShop_gender_g_type" ( "gender_id", "type_id") ' \
+                                 + "VALUES ('" + gen + "', '" + ins_type + "'); "
                 gen_type = Gender.objects.get(id_gender=gen)
                 gen_type.g_type.add(Type.objects.get(id_type=ins_type))
                 foot.footwear_gender.add(gen)
-                query_add_footwear_gender = 'INSERT INTO "KidsStepShop_footwear_footwear_gender" ( "footwear_id", "gender_id") ' \
-                                            + "VALUES ('" + id_ + "', '" + gen + "');"
-                cur.execute(query_add_footwear_gender)
-                conn.commit()
-            # for si in size_list:
-            #     cur.execute(
-            #         'SELECT * FROM "KidsStepShop_footwear_size" WHERE "footwear_id" =  ' + "'" + id_ + "'" ' AND "size_id" = ' + "'" + si + "';")
-            #     qq = cur.fetchone()
-            #     if not qq:
-            #         query_add_footwear_size = 'INSERT INTO "KidsStepShop_footwear_size" ( "footwear_id", "size_id") ' \
-            #                                   + "VALUES ('" + id_ + "', '" + si + "');"
-            #         cur.execute(query_add_footwear_size)
-            #         conn.commit()
-            #     foot.size.add(Size.objects.get(size=si))
-            # for co in color_list:
-            #     foot.color.add(Color.objects.get(name_color=color_dict[co]))
+                query_add += 'INSERT INTO "KidsStepShop_footwear_footwear_gender" ( "footwear_id", "gender_id") ' \
+                             + "VALUES ('" + id_ + "', '" + gen + "'); "
+            for si in size_list:
+                query_add += 'INSERT INTO "KidsStepShop_footwear_size" ( "footwear_id", "size_id") ' \
+                              + "VALUES ('" + id_ + "', '" + si + "'); "
+                foot.size.add(Size.objects.get(id_size=si))
+            for co in color_list:
+                query_add += 'INSERT INTO "KidsStepShop_footwear_color" ( "footwear_id", "color_id") ' \
+                                          + "VALUES ('" + id_ + "', '" + color_dict[co] + "'); "
+                foot.color.add(Color.objects.get(name_color=color_dict[co]))
 
-            # imid = 1
-            # pic_list = []
-            # for pic in of.findall('picture'):
-            #     img = ImagePIL.open(urlopen(pic.text))
-            #     save_path = 'static/media/footwear/' + of.attrib['id'] + '-' + str(imid) + '.webp'
-            #     pic_list.append(save_path)
-            #     # img.save(save_path)
-            #     image = Image()
-            #     image.image = save_path
-            #     image.save()
-            #     foot.image.add(Image.objects.get(image=save_path))
-            #     imid += 1
+            imid = 1
+            pic_list = []
+            for pic in of.findall('picture'):
+                img = ImagePIL.open(urlopen(pic.text))
+                save_path = 'static/media/footwear/' + id_ + '-' + str(imid) + '.webp'
+                pic_list.append(save_path)
+                img.save(save_path)
+                query_add += 'INSERT INTO "KidsStepShop_image" ( "id_image", "image") ' \
+                             + "VALUES ('" + id_ + '-' + str(imid) + "', '" + save_path + "'); " \
+                             + 'INSERT INTO "KidsStepShop_footwear_image" ( "footwear_id", "image_id") ' \
+                             + "VALUES ('" + id_ + "', '" + id_ + '-' + str(imid) + "'); "
+                image = Image()
+                image.image = save_path
+                image.id_image = id_ + '-' + str(imid)
+                image.save()
+                foot.image.add(Image.objects.get(id_image=id_ + '-' + str(imid)))
+                imid += 1
+            cur.execute(query_add)
+            conn.commit()

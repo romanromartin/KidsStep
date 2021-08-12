@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Gender, Type, Brend, Footwear, Color, Profile, Size, StatusOrder, Product, AdvSlider, Order, StatusProduct, TypePrw
+from .models import Gender, Type, Brend, Footwear, Color, Profile, Size, StatusOrder, Product, AdvSlider, Order, \
+    StatusProduct, TypePrw, Image
 
 
 @admin.register(Gender)
@@ -25,10 +26,17 @@ class BrendAdmin(admin.ModelAdmin):
 @admin.register(Footwear)
 class FootwearAdmin(admin.ModelAdmin):
     list_display = ('name', 'get_gender', 'footwear_type', 'footwear_brend', 'id',  'get_colors', 'get_size', 'price')
-    list_filter = ('footwear_type', 'footwear_brend' )
+    list_filter = ('footwear_type', 'footwear_brend')
 #     fields = ['id', 'name', ('footwear_gender', 'footwear_type'), 'footwear_brend','price', 'color', 'size', 'popular']
 #     # readonly_fields = ['image_tag', 'image_tag_side', 'image_tag_top', 'image_tag_scale']
 #
+
+@admin.register(Image)
+class ImageAdmin(admin.ModelAdmin):
+    list_display = ('id_image',  'image_tag')
+    readonly_fields = ['image_tag']
+
+
 
 @admin.register(Color)
 class ColorAdmin(admin.ModelAdmin):

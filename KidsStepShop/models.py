@@ -108,6 +108,10 @@ class Image(models.Model):
     id_image = models.CharField(primary_key=True, max_length=15, auto_created=True)
     image = models.ImageField(upload_to='static/media/footwear', default='static/media/footwear/default.webp')
 
+    def image_tag(self):
+        return mark_safe('<img src="/%s" width = 100px; />' % self.image)
+    image_tag.short_description = 'Image'
+
 
 class Product(models.Model):
     id_product = models.AutoField(primary_key=True, auto_created=True)
