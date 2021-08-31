@@ -1,11 +1,11 @@
 {% extends "base_generic.html" %}
 {% load static %}
-
+{% load i18n %}
 
 
 
 {% block nav-tabs %}
-        <a class="nav-"  href="{% url 'index'  %}">Главная</a>
+        <a class="nav-"  href="{% url 'index'  %}">{% trans 'Главная'  %}</a>
 
 {% endblock %}
 
@@ -36,7 +36,7 @@
                             {% for g in pop.footwear_gender.all %}
 
                                 {% if g.id_gender == 'girl'%}
-                                <img style="height:30px;" src="{% static 'icons/girl.svg' %}" alt="Card image">
+                                <img style="height:28px;" src="{% static 'icons/girl.svg' %}" alt="Card image">
                                 {% elif g.id_gender == 'boy'%}
                                 <img style="height:30px;"  src="{% static 'icons/boy.svg' %}" alt="Card image">
 
@@ -48,7 +48,7 @@
 
 
                         <div class="card_fw_price_block">
-                           <p style="margin-top:5px;" >{{pop.price}} грн</p>
+                           <p style="margin-top:5px;" >{{pop.price}} {% trans 'грн.'  %}</p>
                         </div>
 
                     </div>
@@ -59,22 +59,26 @@
 {% endblock %}
 
 {% block filter %}
-<p> Фильтровать</p>
-<p> Размер</p>
+<a class="navigate_gender"> {% trans 'Фильтры'  %}</a>
+<p class="nav_type_point">  --<span class="navigate_type">{% trans 'Размер'  %}</span></p>
 {% for key, value in filter_size.items %}
     <a>{{ key }}   </a>
     <a style="color:orange;"> {{ value }}</a>
 {% endfor %}
-<p> Цвет </p>
+<p class="nav_type_point">  --<span class="navigate_type">{% trans 'Цвет'  %}</span></p>
+
 {% for key, value in filter_color.items %}
     <a>{{ key }}   </a>
     <a style="color:orange;"> {{ value }}</a>
 {% endfor %}
-<p> Бренд </p>
+<p class="nav_type_point">  --<span class="navigate_type">{% trans 'Бренд'  %}</span></p>
+
 {% for key, value in filter_brend.items %}
     <a>{{ key }}   </a>
     <a style="color:orange;"> {{ value }}</a>
 {% endfor %}
+
+
 
 
 {% endblock %}

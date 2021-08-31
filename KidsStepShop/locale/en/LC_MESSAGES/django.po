@@ -1,0 +1,241 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-08-19 16:10+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: .\forms.py:10
+msgid "Обязательное поле. Не более 150 символов. Только буквы, цифры и символы"
+msgstr ""
+"Required field. 150 characters or less. Letters, numbers, and characters only"
+
+#: .\forms.py:11 .\forms.py:28
+msgid "Логин"
+msgstr "Login"
+
+#: .\forms.py:12 .\forms.py:13 .\forms.py:16
+msgid "Обязательное поле."
+msgstr "Required field."
+
+#: .\forms.py:12
+msgid "Имя"
+msgstr "Name"
+
+#: .\forms.py:14
+msgid "Фамилия"
+msgstr "Surname"
+
+#: .\forms.py:15
+msgid "Формат 000-0000000."
+msgstr "Format 000-0000000."
+
+#: .\forms.py:15
+msgid "Телефон"
+msgstr "Phone"
+
+#: .\forms.py:16 .\forms.py:38
+msgid "Эл. почта"
+msgstr "E-mail"
+
+#: .\forms.py:17
+msgid "Минимум 8 символов. Пароль не может состоять только из цифр."
+msgstr ""
+"A minimum of 8 characters. The password cannot contain only numeric "
+"characters."
+
+#: .\forms.py:18 .\forms.py:29
+msgid "Пароль"
+msgstr "Password"
+
+#: .\forms.py:19
+msgid "Для подтверждения введите, пожалуйста, пароль ещё раз."
+msgstr "To confirm, please enter the password again."
+
+#: .\forms.py:20
+msgid "Подтвердите пароль"
+msgstr "Confirm Password"
+
+#: .\forms.py:37
+msgid "Введите e-mail который был указан при регистрации."
+msgstr "Enter the e-mail that you specified when you registered."
+
+#: .\templates\access_denied.html:6 .\templates\basket.html:6
+#: .\templates\footwear.html:6 .\templates\footwear_detail.html:6
+#: .\templates\index.html:8 .\templates\managment.html:6
+#: .\templates\order.html:6 .\templates\order_done.html:6
+#: .\templates\registration\login.html:6
+#: .\templates\registration\password_reset_complete.html:6
+#: .\templates\registration\password_reset_confirm.html:6
+#: .\templates\registration\password_reset_done.html:6
+#: .\templates\registration\password_reset_form.html:6
+#: .\templates\registration\signup.html:6 .\templates\search.html:6
+#: .\templates\type.html:6
+msgid "Главная"
+msgstr "Home"
+
+#: .\templates\access_denied.html:12
+msgid "Отказано в доступе"
+msgstr "Access Denied"
+
+#: .\templates\base_generic.html:78
+msgid "Избранное"
+msgstr "Favorites"
+
+#: .\templates\base_generic.html:116 .\templates\registration\login.html:21
+msgid "Войти"
+msgstr "Login"
+
+#: .\templates\base_generic.html:173
+msgid "Поиск"
+msgstr "Search"
+
+#: .\templates\basket.html:15
+msgid "Товары в корзине"
+msgstr "Items in the Сart"
+
+#: .\templates\basket.html:17
+msgid "У вас пока нет товаров в корзине"
+msgstr "You have no items in your Сart yet."
+
+#: .\templates\basket.html:29 .\templates\footwear_detail.html:33
+#: .\templates\index.html:63
+msgid "Размер"
+msgstr "Size"
+
+#: .\templates\basket.html:33 .\templates\basket.html:50
+#: .\templates\footwear.html:33 .\templates\footwear_detail.html:29
+#: .\templates\index.html:51 .\templates\order.html:31
+#: .\templates\search.html:34
+msgid "грн."
+msgstr "grn."
+
+#: .\templates\basket.html:50
+msgid "Итого к оплате:"
+msgstr "Total for payment:"
+
+#: .\templates\basket.html:51
+msgid "Оформить заказ"
+msgstr "Place an order"
+
+#: .\templates\footwear_detail.html:43
+msgid "Артикул"
+msgstr "SKU number"
+
+#: .\templates\footwear_detail.html:47
+msgid "Добавить в корзину"
+msgstr "Add to Cart"
+
+#: .\templates\index.html:62
+msgid "Фильтры"
+msgstr "Filters"
+
+#: .\templates\index.html:68
+msgid "Цвет"
+msgstr "Color"
+
+#: .\templates\index.html:74
+msgid "Бренд"
+msgstr "Brand"
+
+msgid "Ваш заказ:"
+msgstr "Your order:"
+
+#: .\templates\order.html:32
+msgid "Выберите опрератора доставки:"
+msgstr "Select a delivery operator:"
+
+#: .\templates\order.html:46 
+msgid "Введите новый пароль"
+msgstr "Enter the new password"
+
+msgid "Населенный пункт"
+msgstr "Locality"
+
+#: .\templates\order.html:48
+msgid "Номер отделения"
+msgstr "Department number"
+
+msgid "Подтвердить заказ"
+msgstr "Confirm the order"
+
+#: .\templates\order.html:68
+msgid "Индекс"
+msgstr "Рostal code"
+
+#: .\templates\order_done.html:13
+msgid "Спасибо за ваш заказ!"
+msgstr "Thank you for your order!"
+
+msgid "Номер вашего заказа"
+msgstr "Your order number"
+
+#: .\templates\order_done.html:15
+msgid "Заказ на сумму:"
+msgstr "Order for the amount:"
+
+#: .\templates\order_done.html:16
+msgid "Доставка:"
+msgstr "Delivery:"
+
+#: .\templates\order_done.html:17
+msgid "Скоро менеджер свяжется с Вами."
+msgstr "The manager will contact you soon."
+
+#: .\templates\order_done.html:20
+msgid "Вернуться на главную"
+msgstr "Go back to the main page"
+
+#: .\templates\registration\login.html:13
+msgid "Авторизация"
+msgstr "Authorization"
+
+#: .\templates\registration\login.html:19
+msgid ""
+"Ваше имя пользователя и пароль не совпадают. Пожалуйста, попробуйте еще раз"
+msgstr "Your user name and password do not match. Please try again"
+
+#: .\templates\registration\login.html:23
+msgid "Восстановить пароль"
+msgstr "Reset Password"
+
+#: .\templates\registration\login.html:24
+#: .\templates\registration\signup.html:13
+#: .\templates\registration\signup.html:25
+msgid "Регистрация"
+msgstr "Registration"
+
+#: .\templates\registration\password_reset_complete.html:13
+msgid "Ваш пароль успешно изменен"
+msgstr "Your password has been successfully changed"
+
+#: .\templates\registration\password_reset_confirm.html:14
+msgid ""
+"Пожалуйста, введите новый пароль дважды, чтобы мы могли убедиться в "
+"правильности написания"
+msgstr ""
+"Please re-enter the new password twice so we can make sure the spelling is "
+"correct"
+
+msgid "Изменить мой пароль"
+msgstr "Change my password"
+
+#: .\templates\registration\password_reset_done.html:12
+msgid "Письмо по восстановлению пароля отправлено на почтовый ящик"
+msgstr "Password recovery letter sent to mailbox"
+
+msgid "Отправить письмо"
+msgstr "Send a letter"

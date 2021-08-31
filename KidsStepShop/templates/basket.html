@@ -1,9 +1,9 @@
 {% extends "base_generic.html" %}
 {% load static %}
-
+{% load i18n %}
 
 {% block nav-tabs %}
-    <a class="nav-"  href="{% url 'index'  %}">Главная</a>
+    <a class="nav-"  href="{% url 'index'  %}">{% trans 'Главная'  %}</a>
 {% endblock %}
 
 
@@ -12,9 +12,9 @@
     <div class=" center "   >
         <div  >
             {% if total > 0 %}
-            <H1 style="text-align:center; color:white;">Товары в корзине </H1>
+            <H1 style="text-align:center; color:white;">{% trans 'Товары в корзине'  %} </H1>
             {% else %}
-            <H1 style="text-align:center; color:white;">У вас пока нет товаров в корзине </H1>
+            <H1 style="text-align:center; color:white;">{% trans 'У вас пока нет товаров в корзине'  %} </H1>
             {% endif %}
         </div>
         <div class="row " style="padding-left:5px;"  >
@@ -26,11 +26,11 @@
                         </div>
                         <div class="col-md-8" style="margin-top:5px;">
                             <h5 class="product-text">{{ prod.product.name }}</h5>
-                            <a style="font-size: 110%;">Размер</a> <span style="font-size: 150%;">{{ prod.size}} </span> <br>
+                            <a style="font-size: 110%;">{% trans 'Размер' %}</a> <span style="font-size: 150%;">{{ prod.size}} </span> <br>
                         </div>
                         <div class="col-md-2 " style="background:orange; border-radius:0px 10px 10px 0px; min-height:40px;   ">
                             <div class="price" >
-                                 <a > <span style="font-size: 200%;" > {{prod.product.price}} </span> грн. </a>
+                                 <a > <span style="font-size: 200%;" > {{prod.product.price}} </span> {% trans 'грн.' %} </a>
                             </div>
                             <div>
                                 <form method="post" >
@@ -47,8 +47,8 @@
             </div>
             {% if total > 0 %}
                 <div class="col-sm-3">
-                        <p style="color:white;">Итого к оплате: <br> <span style="font-size:200%;" > {{total}} </span> грн. </p>
-                        <a class="nav-"  href="{% url 'order' %}">Оформить заказ</a>
+                        <p style="color:white;">{% trans 'Итого к оплате:'  %} <br> <span style="font-size:200%;" > {{total}} </span> {% trans 'грн.'  %} </p>
+                        <a class="nav-"  href="{% url 'order' %}">{% trans 'Оформить заказ'  %}</a>
                 </div>
             {% endif %}
         </div>

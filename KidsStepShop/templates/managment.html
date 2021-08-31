@@ -1,9 +1,9 @@
 {% extends "base_generic.html" %}
 {% load static %}
-
+{% load i18n %}
 
 {% block nav-tabs %}
-    <a class="nav-"  href="{% url 'index'  %}">Главная</a>
+    <a class="nav-"  href="{% url 'index'  %}">{% trans 'Главная'  %}</a>
 {% endblock %}
 
 {% block box %}

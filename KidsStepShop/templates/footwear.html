@@ -1,18 +1,16 @@
 {% extends "base_generic.html" %}
 {% load static %}
+{% load i18n %}
 
 {% block nav-tabs %}
-    <a class="nav-"  href="{% url 'index'  %}">Главная</a>
+    <a class="nav-"  href="{% url 'index'  %}">{% trans 'Главная'  %}</a>
     <img class="nav_arrow" src="{% static 'icons/nav_arrow.svg' %}" alt="Card image">
         <a class="nav-" href="{% url 'type' nav_gender.id_gender  %}" >{{nav_gender.gender}}</a>
     <img class="nav_arrow" src="{% static 'icons/nav_arrow.svg' %}" alt="Card image">
         <a class="nav-"  id="active" >{{nav_type.type}}</a>
 {% endblock %}
 
-{% block filter %}
-    <a class="navigate_gender">Фильтровать</a>
-    <a class="nav_type_point">  --<span class="navigate_type"> Размер </span></a>
-{% endblock %}
+
 
 
 
@@ -32,7 +30,7 @@
                     {% endfor %}
                     </div>
                     <div class="card_fw_price_block">
-                       <p style="margin-top:5px;" >{{f.price}} грн</p>
+                       <p style="margin-top:5px;" >{{f.price}} {% trans 'грн.'  %}</p>
                     </div>
 
                 </div>

@@ -4,19 +4,19 @@ from django.core.files.storage import FileSystemStorage
 from django.urls import reverse
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils.translation import ugettext_lazy as _
 from smart_selects.db_fields import ChainedForeignKey
+from parler.models import TranslatableModel, TranslatedFields
 
 
 
-fs = FileSystemStorage(location='/media/images')
-
-
-class Color(models.Model):
+class Color(TranslatableModel):
     id_color = models.CharField(primary_key=True,  max_length=15, auto_created=True)
-    name_color = models.CharField( max_length=15)
+    translations = TranslatedFields(
+        name_color=models.CharField(max_length=15))
 
-    def __str__(self):
-        return self.name_color
+    # def __str__(self):
+    #     return self.name_color
 
 
 class Size(models.Model):
@@ -28,24 +28,26 @@ class Size(models.Model):
 
 
 
-class Gender(models.Model):
+class Gender(TranslatableModel):
     id_gender = models.CharField(primary_key=True, max_length=20, null=False,)
-    gender = models.CharField(max_length=20, null=False, default='0')
     g_type = models.ManyToManyField('Type')
+    translations = TranslatedFields(
+        gender=models.CharField(max_length=20, null=False, default='0'))
 
-    def __str__(self):
-        return self.gender
+    # def __str__(self):
+    #     return self.gender
 
 
-class Type(models.Model):
+class Type(TranslatableModel):
     id_type = models.CharField(primary_key=True, max_length=20, null=False, )
-    type = models.CharField(max_length=20, null=False, default='0')
+    translations = TranslatedFields(
+        type=models.CharField(max_length=20, null=False, default='0'))
 
-    class Meta:
-        ordering = ["type"]
-
-    def __str__(self):
-        return self.type
+    # class Meta:
+    #     ordering = ["type"]
+    #
+    # # def __str__(self):
+    # #     return self.type
 
 
 class TypePrw(models.Model):
@@ -76,9 +78,8 @@ class Brend(models.Model):
         return self.brend
 
 
-class Footwear(models.Model):
+class Footwear(TranslatableModel):
     id = models.CharField(primary_key=True, max_length=10)
-    name = models.CharField(max_length=100, null=False)
     footwear_brend = models.ForeignKey('Brend', on_delete=models.SET_NULL, null=True, default='0')
     footwear_gender = models.ManyToManyField('Gender')
     footwear_type = models.ForeignKey(Type, on_delete=models.SET_NULL, null=True, default='0')
@@ -87,6 +88,9 @@ class Footwear(models.Model):
     price = models.IntegerField(default='0')
     color = models.ManyToManyField('Color')
     size = models.ManyToManyField(Size)
+    translations = TranslatedFields(
+        name=models.CharField(max_length=100, null=False))
+
 
     class Meta:
         ordering = ["footwear_type"]
@@ -128,16 +132,17 @@ class Product(models.Model):
     #     return self.product.footwear_gender
     # prod_gender.short_description = 'Gender'
 
-    def prod_type(self):
-        return self.product.footwear_type
+    # def prod_type(self):
+    #     return self.product.footwear_type
 
-    prod_type.short_description = 'Type'
+    # prod_type.short_description = 'Type'
 
-class StatusProduct(models.Model):
-    status = models.CharField(primary_key=True, max_length=30, )
+class StatusProduct(TranslatableModel):
+    translations = TranslatedFields(
+        status=models.CharField(primary_key=True, max_length=30, ))
 
-    def __str__(self):
-        return self.status
+    # def __str__(self):
+    #     return self.status
 
 
 class Order(models.Model):
@@ -150,11 +155,12 @@ class Order(models.Model):
     total_price = models.IntegerField(null=True)
 
 
-class StatusOrder(models.Model):
-    status = models.CharField(primary_key=True, max_length=30, )
+class StatusOrder(TranslatableModel):
+    translations = TranslatedFields(
+        status=models.CharField(primary_key=True, max_length=30, ))
 
-    def __str__(self):
-        return self.status
+    # def __str__(self):
+    #     return self.status
 
 
 

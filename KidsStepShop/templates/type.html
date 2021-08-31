@@ -1,8 +1,9 @@
 {% extends "base_generic.html" %}
 {% load static %}
+{% load i18n %}
 
 {% block nav-tabs %}
-    <a class="nav-"  href="{% url 'index'  %}">Главная</a>
+    <a class="nav-"  href="{% url 'index'  %}">{% trans 'Главная'  %}</a>
     <img class="nav_arrow" src="{% static 'icons/nav_arrow.svg' %}" alt="Card image">
         <a class="nav-" id="active" >{{nav_gender.gender}}</a>
 {% endblock %}

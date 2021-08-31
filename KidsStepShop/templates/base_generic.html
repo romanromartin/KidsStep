@@ -3,13 +3,14 @@
 
 <html lang="en">
 <head>
-
+{% load static %}
+{% load i18n %}
 
 {% block title %}
   <title>KidsStep</title>
 {% endblock %}
 
-  {% load static %}
+<link rel="icon" href="data:;base64,=">
 
 
   <meta charset="utf-8">
@@ -28,7 +29,19 @@
   <style>
         body {
           background-image: url("{% static 'css/bg.webp' %}");
+
         }
+
+
+
+        #ukr{background-image: url("{% static 'css/uk.svg' %}");}
+        #rus{background-image: url("{% static 'css/ru.svg' %}");}
+        #en{background-image: url("{% static 'css/en.svg' %}");}
+        #ukr_active{background-image: url("{% static 'css/uk_active.svg' %}");}
+        #rus_active{background-image: url("{% static 'css/ru_active.svg' %}");}
+        #en_active{background-image: url("{% static 'css/en_active.svg' %}");}
+
+
 
     </style>
 
@@ -50,11 +63,19 @@
           </button>
         </div>
 
+
+
+
+
+
         <div class=" ml-auto">
+
+
+
            {% if request.user.is_authenticated %}
               <button class="but-header" type="button">
                 <img src="{% static 'icons/favorite.svg' %}" alt="Favorite" class="header-icon">
-                <span class="d-none d-md-inline " style="color: #fff;" >Favorite</span>
+                <span class="d-none d-md-inline " style="color: #fff;" >{% trans 'Избранное'  %}</span>
               </button>
 
               {% if request.user.is_staff %}
@@ -88,26 +109,56 @@
            {% else %}
 
 
-                <button class="but-header" type="button">
-                    <a href="{% url 'sign_in' %}?next={{request.path}}" style=" text-decoration: none;">
-                    <img src="{% static 'icons/favorite.svg' %}" alt="Favorite" class="header-icon">
-                    <span class="d-none d-md-inline " style="color: #fff;" >Favorite</span>
-                     </a>
-                </button>
 
               <button class="but-header " type="button" >
               <a href="{% url 'sign_in' %}?next={{request.path}}" style=" text-decoration: none;">
                     <img src="{% static 'icons/account.svg' %}" alt="Account" class="header-icon">
-                    <span class="d-none d-md-inline " style="color: #fff;"  >Войти</span>
+                    <span class="d-none d-md-inline " style="color: #fff;"  >{% trans 'Войти'  %}</span>
               </a>
               </button>
 
-                <button class="but-header " type="button">
-                <a href="{% url 'sign_in' %}?next={{request.path}}" style=" text-decoration: none;">
-                <img src="{% static 'icons/shopping_cart.svg' %}" alt="Basket" class="header-icon">
-                </a>
-                </button>
+
           {% endif %}
+
+
+        </div>
+
+        {% get_current_language as LANGUAGE_CODE %}
+        {% get_available_languages as LANGUAGES %}
+        {% get_language_info_list for LANGUAGES as languages %}
+        <div style="padding-top:2px; width:30px;" >
+            {% for language in languages %}
+                <a  href="/{{ language.code }}/{{request.path|slice:'4:'}}" class="lang"
+                    {% if language.code == 'uk'  %}
+                            {% if language.code == LANGUAGE_CODE %}
+                                id="ukr_active"
+                            {% else %}
+                                id="ukr"
+                            {% endif %}
+                    {% elif language.code == 'ru'  %}
+                            {% if language.code == LANGUAGE_CODE %}
+                                id="rus_active"
+                            {% else %}
+                                id="rus"
+                            {% endif %}
+                    {% elif language.code == 'en' %}
+                            {% if language.code == LANGUAGE_CODE %}
+                                id="en_active"
+                            {% else %}
+                                id="en"
+                            {% endif %}
+                    {% endif %}>
+
+                        {{ language.code }}
+                    </a>
+
+
+
+
+
+
+
+            {% endfor %}
         </div>
 
     </div>
@@ -119,7 +170,7 @@
           {% block nav-tabs %}   {% endblock %}
             <form method="post" action="{% url 'search' %}" class="flex-fill d-flex"   >
                 {% csrf_token %}
-                <input type="text"    name="search"  placeholder="Search" class=" flex-fill search "  >
+                <input type="text"    name="search"  placeholder={% trans 'Поиск'  %} class=" flex-fill search "  >
                 <button type="submit"
                         class="search-but"  ><img   src="{% static 'icons/search24.svg' %}" alt="Card image" style="height:27px;"></button>
             </form>
@@ -137,11 +188,11 @@
                     <div class="col-sm-2 " >
                             <br>
                             {% for g in gender %}
-                                <a class="navigate_gender" href="{% url 'type' g.id_gender  %}">{{ g.gender }}</a> <br>
+                                <a class="navigate_gender" href="{% url 'type' g.id_gender  %}"> {{g.gender}}</a> <br>
                                 {% for t in g.g_type.all %}
 
                                     <a class="nav_type_point" href="{% url 'footwear' g.id_gender t.id_type %}">  --
-                                    <span class="navigate_type"> {{ t.type }} </span>
+                                    <span class="navigate_type">  {{t.type }} </span>
                                     </a>
                                     <br>
 

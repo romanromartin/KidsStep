@@ -1,15 +1,16 @@
 {% extends "base_generic.html" %}
 {% load static %}
+{% load i18n %}
 
 {% block nav-tabs %}
-    <a class="nav-"  href="{% url 'index'  %}">Главная</a>
+    <a class="nav-"  href="{% url 'index'  %}">{% trans 'Главная'  %}</a>
 {% endblock %}
 
 
 {% block box %}
     <div class=" center  "   style="padding-top:50px;" >
       <div class="top text-center " style="width:50%; " >
-        <h4 style="color:white; "> Регистрация</h4> <br>
+        <h4 style="color:white; ">{% trans 'Регистрация'  %} </h4> <br>
             <form method="post">
               {% csrf_token %}
                 {% for field in form %}
@@ -21,7 +22,7 @@
                       <p class=" help-text">{{ field.help_text }} </p>
                     {% endif %}
                 {% endfor %}
-              <input class=" submit" style="height:40px;; width:60%; margin:0px; border-radius:10px; "  type="submit" value="Регистрация" />
+              <input class=" submit" style="height:40px;; width:60%; margin:0px; border-radius:10px; "  type="submit" value={% trans 'Регистрация'  %} />
             </form>
       </div>
     </div>
