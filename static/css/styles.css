@@ -72,7 +72,7 @@ body{
 
 .card_fw{
     position: relative;
-    width:200px;
+    width:204px;
     height:310px;
     background: rgba(50, 60, 140, 0.5);
     margin:8px;
@@ -85,19 +85,31 @@ body{
 }
 
 .card_fw_image{
-    width:180px;
+    width:188px;
     margin-top:8px;
     margin-left:8px;
     border-radius: 5px;
 }
 
 .card_fw_text{
-    margin:10px;
+    margin-left:10px;
+    margin-right:10px;
+    color:orange;
+    position: absolute;
+    top: 200px;
+
 }
 .card_fw_size{
     display:inline-block;
     color:white;
     font: bold italic 70% Arial;
+}
+
+.card_size_block{
+    margin-left:10px;
+    margin-right:10px;
+    position: absolute;
+    top: 245px;
 
 }
 
@@ -126,7 +138,7 @@ body{
     border-radius: 10px;
 }
 
-.color_block{
+.gender_block{
     position: absolute;
     top: 10px;
     left: 10px;
@@ -449,4 +461,27 @@ body{
 	border-radius: 20px;
 	shadow-box:5px;
 
+}
+
+.page_unit{
+    border: 2px solid white;
+    width:30px;
+    height:30px;
+    border-radius:5px;
+
+    margin-left:5px;
+    text-align:center;
+}
+
+
+.page_{
+    color:white;
+    font-size:110%;
+    display:block;
+}
+
+.page_:hover{
+    text-decoration: none;
+    color: white;
+    text-shadow: 0px 0px 10px rgba(20, 30, 100, 0.7);
 }

@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate, login, logout, models
 from KidsStepShop.forms import SignUpForm, LogInForm, ResetPasswordForm
 from django.conf import settings
 import random
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.utils.translation import ugettext as _
 import os
 import psycopg2
@@ -16,15 +17,31 @@ import KidsStepShop.db_handler as handler
 
 gender = Gender.objects.all()
 types = Type.objects.all()
-
 supplier = {'berni.com.ua': 'b-'}
 
 
 def index(request):
     gender = Gender.objects.all()
     fw_pop = Footwear.objects.all().order_by('-popular')[:30]
+    paginator = Paginator(fw_pop, 16)
+    page = request.GET.get('page')
+    if not page:
+        page = '1'
+    dots_start = False
+    dots_end = False
+    if int(page) > 3:
+        dots_start = True
+    if int(page) < paginator.num_pages - 2:
+        dots_end = True
+    try:
+        popular_footwear = paginator.page(page)
+    except PageNotAnInteger:
+        popular_footwear = paginator.page(1)
+    except EmptyPage:
+        popular_footwear = paginator.page(paginator.num_pages)
     adv = AdvSlider.objects.all()
-    return render(request, 'index.html', context={'gender': gender, 'popular': fw_pop, 'adv': adv,})
+    return render(request, 'index.html',
+                  context={'gender': gender, 'popular': popular_footwear, 'adv': adv, 'dots_start': dots_start, 'dots_end': dots_end})
 
 
 def type(request, id_gender):
@@ -38,9 +55,27 @@ def type(request, id_gender):
 def footwear(request, id_gender, id_type):
     gender = Gender.objects.all()
     footwear = Footwear.objects.filter(footwear_gender__id_gender=id_gender, footwear_type__id_type=id_type)
+    paginator = Paginator(footwear, 16)
+    page = request.GET.get('page')
+    if not page:
+        page = '1'
+    dots_start = False
+    dots_end = False
+    if int(page) > 3:
+        dots_start = True
+    if int(page) < paginator.num_pages - 2:
+        dots_end = True
+
+    try:
+        page_footwear = paginator.page(page)
+    except PageNotAnInteger:
+        page_footwear = paginator.page(1)
+    except EmptyPage:
+        page_footwear = paginator.page(paginator.num_pages)
+
     return render(request, 'footwear.html',
-                  context={'gender': gender, 'types': types, 'footwear_selected': footwear,
-                           'nav_gender': navigation_gender(id_gender), 'nav_type': navigation_type(id_type)})
+                  context={'gender': gender, 'types': types, 'footwear_selected': page_footwear,
+                           'nav_gender': navigation_gender(id_gender), 'nav_type': navigation_type(id_type),'dots_start': dots_start, 'dots_end': dots_end})
 
 
 def footwear_detail(request, id_gender, id_type, id):
@@ -271,6 +306,9 @@ def db_handler(request):
             handler.drop_footwear()
             handler.add_vendor()
             handler.add_footwear()
+        elif request.POST.get("add_footwear"):
+            handler.add_footwear()
+
     return render(request, 'db_handler.html')
 
 

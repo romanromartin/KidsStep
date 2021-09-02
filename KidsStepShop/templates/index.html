@@ -26,26 +26,21 @@
                         <div style="height:180px;">
                         <img class=" card_fw_image  " src=" /{{ pop.image.first.image }} " alt="Card image">
                         </div>
-                        <p class="card_fw_text"> {{ pop.name }}</p>
-                        <div style="margin-left: 10px; height:20px;" >
+                        <span class="card_fw_text" > {{ pop.name }}</span>
+                        <div class="card_size_block" >
                         {% for s in pop.size.all %}
-                            <p class="card_fw_size" > {{ s }}</p>
+                            <span class="card_fw_size" > {{ s }}</span>
                         {% endfor %}
                         </div>
-                        <div class="color_block" >
+                        <div class="gender_block" >
                             {% for g in pop.footwear_gender.all %}
-
                                 {% if g.id_gender == 'girl'%}
                                 <img style="height:28px;" src="{% static 'icons/girl.svg' %}" alt="Card image">
                                 {% elif g.id_gender == 'boy'%}
                                 <img style="height:30px;"  src="{% static 'icons/boy.svg' %}" alt="Card image">
-
                                 {% endif %}
                             {% endfor %}
-
                         </div>
-
-
 
                         <div class="card_fw_price_block">
                            <p style="margin-top:5px;" >{{pop.price}} {% trans 'грн.'  %}</p>
@@ -53,8 +48,58 @@
 
                     </div>
                 </a>
-
         {% endfor %}
+        <!--        page navigation-->
+        <div style="display: flex;" >
+            {% if popular.has_previous %}
+                <div class="page_unit"  >
+                    <a href="?page={{ popular.previous_page_number }}" >
+                        <img src="{% static 'icons/arrow-left.svg' %}" alt="arrow-left"
+                             style="height:20px; width:20px; margin-top:3px; "  ></a>
+                </div>
+                <div class="page_unit" >
+                    <a href="?page=1" class="page_">1</a>
+                </div>
+                {% if dots_start%}
+                    <div class="page_unit" style="border: 0px solid orange;">
+                        <a  class="page_" >...</a>
+                    </div>
+                {% endif %}
+                {% if   popular.number  != 2 %}
+                    <div class="page_unit" >
+                        <a href="?page={{ popular.previous_page_number }}" class="page_">{{ popular.previous_page_number }}</a>
+                    </div>
+                {% endif %}
+            {% endif %}
+                <div class="page_unit" style="border: 2px solid orange;">
+                    <a  class="page_" style="color:orange; ">{{ popular.number }}</a>
+                </div>
+            {% if popular.has_next %}
+                {% if popular.next_page_number != popular.paginator.num_pages %}
+                    <div class="page_unit" >
+                        <a href="?page={{ popular.next_page_number }}" class="page_">{{ popular.next_page_number }}</a>
+                    </div>
+                {% endif %}
+                {% if dots_end%}
+                    <div class="page_unit" style="border: 0px solid orange;">
+                        <a  class="page_" >...</a>
+                    </div>
+                {% endif %}
+                <div class="page_unit" >
+                    <a href="?page={{ popular.paginator.num_pages }}" class="page_">{{ popular.paginator.num_pages }}
+                    </a>
+                </div>
+                <div class="page_unit" >
+                    <a href="?page={{ popular.next_page_number }}" >
+                        <img src="{% static 'icons/arrow-right.svg' %}" alt="arrow-left"
+                             style="height:20px; width:20px; margin-top:3px; " >
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+
+
     </div>
 {% endblock %}
 

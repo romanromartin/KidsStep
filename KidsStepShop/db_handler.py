@@ -13,7 +13,7 @@ conn = psycopg2.connect(dbname='d5r03h83qnqmr6', host='ec2-54-155-254-112.eu-wes
                         user="meyvttuswnhyil",
                         password="b88d8d4e9878150f2013cb77683bdefa2e4cb21f05844124f55b77c3349e4b6d")
 cur = conn.cursor()
-heroku = False
+heroku = True
 supplier = {'berni.com.ua': 'b-'}
 
 lang = ['en', 'ru', 'uk']
@@ -91,8 +91,8 @@ def add_types():
     query_add_type = ''
     for t in type_dict:
         if heroku:
-            query_add_type += 'INSERT INTO "KidsStepShop_type" ( "id_type", "type") ' \
-                              + "VALUES ('" + t + "', '" + type_dict[t] + "'); "
+            query_add_type += 'INSERT INTO "KidsStepShop_type" ( "id_type") ' \
+                              + "VALUES ('" + t + "'); "
         # type_to_add = Type(id_type=t, type=type_dict[t])
         type_to_add = Type(id_type=t)
         type_to_add.save()
@@ -100,6 +100,10 @@ def add_types():
             type_to_add.set_current_language(l)
             type_to_add.type = type_dict[t][lang.index(l)]
             type_to_add.save()
+            if heroku:
+                query_add_type += 'INSERT INTO "KidsStepShop_type_translation" ( "language_code", "type", "master_id") ' \
+                                  + "VALUES ('" + l + "', '" + type_dict[t][lang.index(l)] + "', '" + t + "'); "
+
 
     if heroku:
         cur.execute(query_add_type)
@@ -110,8 +114,8 @@ def add_gender_and_typeprw():
     query_add_gender = ''
     for g in gender_dict:
         if heroku:
-            query_add_gender += 'INSERT INTO "KidsStepShop_gender" ( "id_gender", "gender") ' \
-                                + "VALUES ('" + g + "', '" + gender_dict[g] + "'); "
+            query_add_gender += 'INSERT INTO "KidsStepShop_gender" ( "id_gender") ' \
+                                + "VALUES ('" + g + "'); "
         # gender = Gender(id_gender=g, gender = gender_dict[g])
         gender_to_add = Gender(id_gender=g)
         gender_to_add.save()
@@ -119,6 +123,9 @@ def add_gender_and_typeprw():
             gender_to_add.set_current_language(l)
             gender_to_add.gender = gender_dict[g][lang.index(l)]
             gender_to_add.save()
+            if heroku:
+                query_add_gender += 'INSERT INTO "KidsStepShop_gender_translation" ( "language_code", "gender", "master_id") ' \
+                                    + "VALUES ('" + l + "', '" + gender_dict[g][lang.index(l)] + "', '" + g + "'); "
 
         for t in Type.objects.all():
             img = ''
@@ -180,7 +187,7 @@ def add_advslider():
         if adv == 'default.webp':
             continue
         if heroku:
-            query_add_adv = 'INSERT INTO "KidsStepShop_advslider" ( "adv_image") ' \
+            query_add_adv += 'INSERT INTO "KidsStepShop_advslider" ( "adv_image") ' \
                             + "VALUES ('" + 'static/media/adv_slider/' + adv + "'); "
 
         advert = AdvSlider(adv_image='static/media/adv_slider/' + adv)
@@ -202,14 +209,18 @@ def add_colors():
     query_add_color = ''
     for c in color_dict:
         if heroku:
-            query_add_color += 'INSERT INTO "KidsStepShop_color" ("id_color", "name_color") ' \
-                               + "VALUES ('" + color_dict[c] + "', '" + color_dict[c] + "'); "
+            query_add_color += 'INSERT INTO "KidsStepShop_color" ("id_color") ' \
+                               + "VALUES ('" + c + "'); "
         col = Color(id_color=c)
         col.save()
         for l in lang:
             col.set_current_language(l)
             col.name_color = color_dict[c][lang.index(l)]
             col.save()
+            if heroku:
+                query_add_color += 'INSERT INTO "KidsStepShop_color_translation" ("language_code", "name_color", "master_id") ' \
+                                   + "VALUES ('" + l + "', '" + color_dict[c][lang.index(l)] + "', '" + c + "'); "
+
     if heroku:
         cur.execute(query_add_color)
         conn.commit()
@@ -261,7 +272,7 @@ def add_footwear():
         id_cat.append(category.attrib["id"])
     for id_ in id_cat:
         offer = tree.findall("shop/offers/offer[categoryId='" + id_ + "']")
-        for of in offer[:1]:
+        for of in offer[21:30]:
             gender_list = []
             size_list = []
             color_list = []
@@ -300,30 +311,33 @@ def add_footwear():
                 cur.execute(query_id)
                 qq = cur.fetchone()[0]
                 query_add += 'INSERT INTO "KidsStepShop_footwear" ' \
-                             '( "id", "name", "popular", "price", "footwear_brend_id", "footwear_type_id") ' \
+                             '( "id",  "popular", "price", "footwear_brend_id", "footwear_type_id") ' \
                              + "VALUES ('" + id_ + "', '" \
-                             + of.find('name').text + "', '" \
                              + '0' + "', '" \
                              + of.find('oldprice').text + "', '" \
                              + str(qq) + "', '" \
                              + ins_type + "'); "
             foot = Footwear(id=id_,
-                            # name=of.find('name').text,
                             popular=0,
                             price=of.find('oldprice').text,
                             footwear_brend=Brend.objects.get(brend=of.find('vendor').text),
                             footwear_type=Type.objects.get(id_type=ins_type))
             foot.save()
 
-            foot.set_current_language('ru')
-            foot.name = of.find('name').text
-            foot.save()
-            foot.set_current_language('en')
-            foot.name = translate_string(of.find('name').text, from_lang='ru', to_lang='en')
-            foot.save()
-            foot.set_current_language('uk')
-            foot.name = translate_string(of.find('name').text, from_lang='ru', to_lang='uk')
-            foot.save()
+            for l in lang:
+                foot.set_current_language(l)
+                if l != 'ru':
+                    name = translate_string(of.find('name').text, from_lang='ru', to_lang=l)
+                else:
+                    name = of.find('name').text
+                if heroku:
+                    print(name)
+                    edit_name = name.replace("'", "`")
+                    query_add += 'INSERT INTO "KidsStepShop_footwear_translation" ("language_code", "name", "master_id") ' \
+                                       + "VALUES ('" + l + "', '" + edit_name + "', '" + id_ + "'); "
+                foot.name = name
+                foot.save()
+            # if <param> "Пол" field in XML feed is absent '''''~~``` children`s
             if gender_list == []:
                 if of.find('name').text.find('мальч') > 0:
                     gender_list.append('boy')
@@ -356,7 +370,7 @@ def add_footwear():
                         foot.color.add(Color.objects.get(id_color=egg))
                         if heroku:
                             query_add += 'INSERT INTO "KidsStepShop_footwear_color" ( "footwear_id", "color_id") ' \
-                                         + "VALUES ('" + id_ + "', '" + color_dict[co] + "'); "
+                                         + "VALUES ('" + id_ + "', '" + egg + "'); "
 
             imid = 1
             pic_list = []
@@ -375,6 +389,7 @@ def add_footwear():
                 foot.image.add(Image.objects.get(id_image=id_ + '-' + str(imid)))
                 imid += 1
             if heroku:
+
                 cur.execute(query_add)
                 conn.commit()
 
@@ -383,3 +398,11 @@ def translate_string(text, from_lang, to_lang):
     translator = Translator()
     result = translator.translate(text=text, dest=to_lang, src=from_lang)
     return result.text
+
+def count_footwear():
+    id_cat = []
+    for category in cat:
+        id_cat.append(category.attrib["id"])
+    for id_ in id_cat:
+        offer = tree.findall("shop/offers/offer[categoryId='" + id_ + "']")
+        print(len(offer))
