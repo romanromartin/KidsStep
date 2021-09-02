@@ -22,7 +22,7 @@ supplier = {'berni.com.ua': 'b-'}
 
 def index(request):
     gender = Gender.objects.all()
-    fw_pop = Footwear.objects.all().order_by('-popular')[:30]
+    fw_pop = Footwear.objects.all().order_by('-popular')
     paginator = Paginator(fw_pop, 16)
     page = request.GET.get('page')
     if not page:
