@@ -9,9 +9,9 @@ from .models import Gender, Type, Footwear, Product, Color, Size, \
 # from KidsStepShop.translator import make_translation, get_string
 from googletrans import Translator
 
-conn = psycopg2.connect(dbname='d5r03h83qnqmr6', host='ec2-54-155-254-112.eu-west-1.compute.amazonaws.com', port='5432',
-                        user="meyvttuswnhyil",
-                        password="b88d8d4e9878150f2013cb77683bdefa2e4cb21f05844124f55b77c3349e4b6d")
+conn = psycopg2.connect(dbname='desbfre3o7mc3p', host='ec2-79-125-30-28.eu-west-1.compute.amazonaws.com', port='5432',
+                        user="jaapeobazpotto",
+                        password="f4630550268daa93fa418311c38690aadaf5f1c06c347961268f3094c066b663")
 cur = conn.cursor()
 heroku = False
 supplier = {'berni.com.ua': 'b-'}
