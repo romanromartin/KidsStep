@@ -3,27 +3,38 @@
 {% load i18n %}
 
 {% block nav-tabs %}
-    <a class="nav-"  href="{% url 'index'  %}">{% trans 'Главная'  %}</a>
+    <a class="text-secondary"  href="{% url 'index'  %}">{% trans 'Главная'  %}</a>
     <img class="nav_arrow" src="{% static 'icons/nav_arrow.svg' %}" alt="Card image">
-        <a class="nav-" id="active" >{{nav_gender.gender}}</a>
+        <a id="nav_active" >{{nav_gender.gender}}</a>
 {% endblock %}
 
 
 
 {% block content %}
-  <div class="col-sm-10 body_ ">
-        {% for s in nav_gender.g_type.all %}
-            <a href="{% url 'footwear' nav_gender.id_gender s.id_type %}">
-                 <div class=" card_fw" style=" height:230px;">
-                     {% for preview in prw_list%}
-                        {%if preview.prw_type.id_type == s.id_type%}
-                            <img class=" card_fw_image  " src=" /{{ preview.prw_image }} " alt="Card image">
-                        {%endif%}
-                     {%endfor%}
-                    <p class="card_fw_text" style="font-size: 20px; text-align: center;">{{ s.type }}</p>
-                 </div>
-            </a>
-        {% endfor %}
+    <div class="row">
+      <div class="col-lg-1 d-none d-md-inline"></div>
+      <div class="col-lg-10 row ">
+            {% for s in nav_gender.g_type.all %}
+                <div class="col-xl-3 col-lg-3 col-sm-6 mb-1 px-1 ">
+                    <div class="card shadow-sm bg-light"  >
+                        <a href="{% url 'footwear' nav_gender.id_gender s.id_type %}">
+                            <div class="card-body " >
+                                 {% for preview in prw_list%}
+                                    {%if preview.prw_type.id_type == s.id_type%}
+                                        <img class=" card-img-top " src=" /{{ preview.prw_image }} " alt="Card image">
+                                    {%endif%}
+                                 {%endfor%}
 
-  </div>
+                                <h4 class="card-title my-2 card_self">{{ s.type }}</h4>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+            {% endfor %}
+
+      </div>
+      <div class="col-lg-1 d-none d-md-inline"></div>
+    </div>
 {% endblock %}
+

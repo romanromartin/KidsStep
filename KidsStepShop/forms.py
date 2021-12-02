@@ -40,3 +40,29 @@ class ResetPasswordForm(PasswordResetForm):
 
 
 
+class OrderForm(forms.Form):
+    username = forms.CharField(help_text=_('Обязательное поле.'),
+                               widget=forms.TextInput(attrs={'placeholder': _('Имя')}),
+                               required=True,
+                               error_messages={'required': 'Не указано имя'})
+    phone = forms.CharField(help_text=_('Формат 000-0000000.'),
+                            widget=forms.TextInput(attrs={'placeholder': _('Телефон')}),
+                            error_messages={'required': 'Не указан телефон'},
+                            required=True)
+    delivery = forms.ChoiceField(help_text=_('Обязательное поле.'),
+                                 choices=(('nova-poshta','Новая почта'), ('ukrposhta','Укрпочта')) )
+
+    city = forms.CharField(help_text=_('Обязательное поле.'),
+                           widget=forms.TextInput(attrs={'placeholder': _('Населенный пункт')}),
+                           error_messages={'required': 'Нужно указать населенный пункт'},
+                           required=True)
+    department = forms.CharField(help_text=_('Обязательное поле.'),
+                                 widget=forms.TextInput(attrs={'placeholder': _('Отделение')}),
+                                 error_messages={'required': 'Нужно указать отделение'},
+                                 required=True)
+
+#
+# PRODUCT_QUANTITY_CHOICES = [(i, str(i)) for i in range(1, 21)]
+# class CartAddProductForm(forms.Form):
+#     quantity = forms.TypedChoiceField(choices=PRODUCT_QUANTITY_CHOICES, coerce=int)
+#     update = forms.BooleanField(required=False, initial=False, widget=forms.HiddenInput)

@@ -2,15 +2,12 @@
 {% load static %}
 {% load i18n %}
 
-{% block nav-tabs %}
-    <a class="nav-"  href="{% url 'index'  %}">{% trans 'Главная'  %}</a>
-{% endblock %}
 
 
 {% block box %}
-    <div class=" center  "   style="padding-top:50px;" >
-        <div class="top text-center " style="width:50%; " >
-              <h4 style="color:white; ">{% trans 'Авторизация'  %} </h4> <br>
+    <div   style="padding-top:50px;" >
+        <div class="top text-center bg-secondary w-50 py-4"  >
+              <h4 style="color:orange; ">{% trans 'Авторизация'  %} </h4> <br>
               <form method="post"  >
                 {% csrf_token %}
                   <p class=" login " >  {{ form.username }}  </p>
@@ -20,8 +17,10 @@
                   {% endif %}
                   <input class=" submit" style="height:40px;; width:60%; margin:0px; border-radius:10px; "  type="submit" value={% trans 'Войти'  %} />
               </form>
-              <a href="{% url 'password_reset' %}" style="display: block; color:white; margin-bottom:5px; margin-top:40px; ">{% trans 'Восстановить пароль'  %} </a>
-              <a href="{% url 'signup' %}" style="color:white;" >{% trans 'Регистрация'  %}</a>
+              <a href="{% url 'password_reset' %}" style="display: block; color:orange; margin-bottom:5px; margin-top:40px; ">{% trans 'Восстановить пароль'  %} </a>
+              <a href="{% url 'signup' %}" style="color:orange;" >{% trans 'Регистрация'  %}</a>
         </div>
     </div>
 {% endblock %}
+
+

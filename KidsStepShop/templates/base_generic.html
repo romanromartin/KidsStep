@@ -26,201 +26,145 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fotorama/4.6.4/fotorama.js"></script>
 
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
-  <style>
-        body {
-          background-image: url("{% static 'css/bg.webp' %}");
-
-        }
-
-
-
-        #ukr{background-image: url("{% static 'css/uk.svg' %}");}
-        #rus{background-image: url("{% static 'css/ru.svg' %}");}
-        #en{background-image: url("{% static 'css/en.svg' %}");}
-        #ukr_active{background-image: url("{% static 'css/uk_active.svg' %}");}
-        #rus_active{background-image: url("{% static 'css/ru_active.svg' %}");}
-        #en_active{background-image: url("{% static 'css/en_active.svg' %}");}
-
-
-
-    </style>
 
 </head>
-<body>
-
-    <div class="d-flex header container" >
-        <div>
-          <button class="but-header ">
-          <img src="{% static 'icons/menu-24px.svg' %}" alt="Menu" class="header-icon">
-          </button>
-        </div>
-        <div>
-           <button class="but-header ">
-           <a href="{% url 'index' %}" >
-            <img src="{% static 'logo/logo_KS_light.svg' %}" alt="Logo" class="header-icon">
-            <img src="{% static 'logo/logo_KS_text.svg' %}" alt="Logo" class="header-icon d-none d-md-inline" style="margin-left: 10px;">
-          </a>
-          </button>
-        </div>
-
-
-
-
-
-
-        <div class=" ml-auto">
-
-
-
-           {% if request.user.is_authenticated %}
-              <button class="but-header" type="button">
-                <img src="{% static 'icons/favorite.svg' %}" alt="Favorite" class="header-icon">
-                <span class="d-none d-md-inline " style="color: #fff;" >{% trans 'Избранное'  %}</span>
-              </button>
-
-              {% if request.user.is_staff %}
-                  <button class="but-header " type="button" >
-                        <a href="{% url 'profile' %}?next={{request.path}}" style=" text-decoration: none;">
-                             <img src="{% static 'icons/account.svg' %}" alt="Account" class="header-icon">
+<body class="bg-light" >
+<!--        Header ----------------->
+  <div class=" container-fluid bg-secondary px-5 " style="height: 96px;">
+            <div class="row h-100">
+                <div class="col-xl-4  col-md-5 ">
+                    <div class="mt-3">
+                        <a href="{% url 'index' %}"  style=" text-decoration: none; " >
+                            <img src="{% static 'logo/logo_KS_light.svg' %}" alt="Logo" class="header-icon ">
+                            <img src="{% static 'logo/logo_KS_text.svg' %}" alt="Logo" class="header-icon d-none d-md-inline" style="margin-left: 10px;">
+                            <span style="letter-spacing:3px;" class="d-none d-lg-block">Интернет-магазин детской обуви</span>
                         </a>
-                        <a href="{% url 'managment' %}?next={{request.path}}" style=" text-decoration: none;">
-                            <img src="{% static 'icons/support_agent.svg' %}" alt="Account" class="header-icon">
-                            <span class="d-none d-md-inline " style="color: #fff;">{{ user.get_username }}</span>
-                        </a>
-                  </button>
-              {% else %}
-                  <button class="but-header " type="button" >
-                      <a href="{% url 'profile' %}?next={{request.path}}" style=" text-decoration: none;">
-                      <img src="{% static 'icons/account.svg' %}" alt="Account" class="header-icon">
-                      <span class="d-none d-md-inline " style="color: #fff;">{{ user.get_username }}</span>
-                  </a>
-                  </button>
-              {% endif %}
-                  <button class="but-header " type="button">
-                    <a href="{% url 'basket' %}?next={{request.path}}" style=" text-decoration: none;">
-                    <img src="{% static 'icons/shopping_cart.svg' %}" alt="Basket" class="header-icon">
-                  </a>
-                  </button>
-                   <button class="but-header " type="button">
-                     <a href="{% url 'logout' %}?next={{request.path}}" style=" text-decoration: none;">
-                        <img src="{% static 'icons/logout-24px.svg' %}" alt="Logout" class="header-icon">
-                    </a>
-                   </button>
-           {% else %}
+                    </div>
+                </div>
+                <div class="col-xl-8 col-md-7 ">
+                    <div class="d-flex  mt-1 justify-content-end">
+                        {% get_current_language as LANGUAGE_CODE %}
+                        {% get_available_languages as LANGUAGES %}
+                        {% get_language_info_list for LANGUAGES as languages %}
 
+                        {% block header %} {% endblock %}
+<!--                        ------------------------------------Button Languages-->
+                        <div class="button-header  mx-1  dropdown " >
+                            <a class=" px-1  dropdown-toggle" href="#" role="button" id="dropdownLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <img src="{% static 'icons/language.svg' %}" alt="Languages" class="header-icon ">
+                                <span class="d-none d-md-inline "  >{{LANGUAGE_CODE}}</span>
+                            </a>
+                            <div class="dropdown-menu bg-secondary border border-white"  aria-labelledby="dropdownLink">
+                                <a class="dropdown-item" style="color:orange;" href="/en/{{request.path|slice:'4:'}}">EN English</a>
+                                <a class="dropdown-item" style="color:orange;" href="/ru/{{request.path|slice:'4:'}}">RU Русский</a>
+                                <a class="dropdown-item" style="color:orange;" href="/uk/{{request.path|slice:'4:'}}">UK Українська</a>
+                            </div>
 
+                        </div>
 
-              <button class="but-header " type="button" >
-              <a href="{% url 'sign_in' %}?next={{request.path}}" style=" text-decoration: none;">
-                    <img src="{% static 'icons/account.svg' %}" alt="Account" class="header-icon">
-                    <span class="d-none d-md-inline " style="color: #fff;"  >{% trans 'Войти'  %}</span>
-              </a>
-              </button>
+<!--                        ----------------------------Buttons Favorite & Account-->
 
+                        {% if request.user.is_authenticated %}
+                              <div class="button-header  mx-1  ">
+                                  <a class="px-1" href="#"  >
+                                    <img src="{% static 'icons/favorite.svg' %}" alt="Favorite" class="header-icon">
 
-          {% endif %}
+                                  </a>
+                              </div>
+                            {% if request.user.is_staff %}
+                                  <div class="button-header mx-1 ">
+                                        <a class="px-1" href="{% url 'profile' %}?next={{request.path}}" >
+                                            <img src="{% static 'icons/account.svg' %}" alt="Account" class="header-icon">
+                                        </a>
 
-
-        </div>
-
-        {% get_current_language as LANGUAGE_CODE %}
-        {% get_available_languages as LANGUAGES %}
-        {% get_language_info_list for LANGUAGES as languages %}
-        <div style="padding-top:2px; width:30px;" >
-            {% for language in languages %}
-                <a  href="/{{ language.code }}/{{request.path|slice:'4:'}}" class="lang"
-                    {% if language.code == 'uk'  %}
-                            {% if language.code == LANGUAGE_CODE %}
-                                id="ukr_active"
+                                        <a class="px-1" href="{% url 'managment' %}?next={{request.path}}" >
+                                            <img src="{% static 'icons/support_agent.svg' %}" alt="Support" class="header-icon d-none d-sm-inline">
+                                            <span class="d-none d-lg-inline " >{{ user.get_username }}</span>
+                                        </a>
+                                    </div>
                             {% else %}
-                                id="ukr"
-                            {% endif %}
-                    {% elif language.code == 'ru'  %}
-                            {% if language.code == LANGUAGE_CODE %}
-                                id="rus_active"
-                            {% else %}
-                                id="rus"
-                            {% endif %}
-                    {% elif language.code == 'en' %}
-                            {% if language.code == LANGUAGE_CODE %}
-                                id="en_active"
-                            {% else %}
-                                id="en"
-                            {% endif %}
-                    {% endif %}>
+                                <div class="button-header  mx-1  ">
+                                 <a class="px-1" href="{% url 'profile' %}?next={{request.path}}" >
 
-                        {{ language.code }}
-                    </a>
+                                      <img src="{% static 'icons/account.svg' %}" alt="Account" class="header-icon">
+                                      <span class="d-none d-lg-inline " >{{ user.get_username }}</span>
+                                 </a>
+                             </div>
+                        {% endif %}
+                             <div class="button-header mx-1 ">
+                                 <a class="px-1"  href="{% url 'logout' %}?next={{request.path}}" >
+                                    <img src="{% static 'icons/logout-24px.svg' %}" alt="Logout" class="header-icon">
+                                </a>
+                             </div>
+
+                        {% else %}
+<!--                                    -----------------------Login-->
+                              <div class="button-header mx-1 ">
+                                  <a class="px-1" href="{% url 'login' %}?next={{request.path}}" >
+                                        <img src="{% static 'icons/account.svg' %}" alt="Login" class="header-icon">
+                                        <span class="d-none d-md-inline "   >{% trans 'Войти'  %}</span>
+                                  </a>
+                              </div>
+                        {% endif %}
 
 
 
+<!--                    -------------------------------------Button Shoping Cart-->
+                        <div class="button-header mx-1 ">
+                            <a class="but-header px-1" href="{% url 'basket' %}?next={{request.path}}" >
+                                <img src="{% static 'icons/shopping_cart.svg' %}" alt="Basket" class="header-icon">
+                            </a>
+                        </div>
 
 
+                    </div>
+                    <div class="d-flex  mt-1 ">
+                        {% if gender %}
+                            {% for g in gender %}
+                                <div>
+                                        <a class="dropdown-toggle mx-2 " href="{% url 'type' g.id_gender  %}" role="button"
+                                            id="{{g.id_gender}}" data-toggle="dropdown" aria-haspopup="true"
+                                            aria-expanded="false"> {{g.gender}}</a>
 
+                                    <div class="dropdown-menu bg-secondary border border-white "  aria-labelledby="{{g.id_gender}}">
+                                        {% for t in g.g_type.all %}
+                                        <a class="dropdown-item" style="color:orange;" href="{% url 'footwear' g.id_gender t.id_type %}"> {{t.type }} </a>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                        <form method="post" action="{% url 'search' %}" class="flex-fill d-flex px-1  "   >
+                            {% csrf_token %}
+                            <input type="text" class=" flex-fill bg-secondary  search "
+                                   name="search"  placeholder={% trans 'Поиск'  %}  >
+                            <button type="submit" class=" px-3  search-button "  >
+                                <img   src="{% static 'icons/search24.svg' %}" alt="Card image" style="height:27px;"></button>
+                        </form>
 
-            {% endfor %}
-        </div>
+                    </div>
+                </div>
+            </div>
+
 
     </div>
 
 
-  <div class=" container " >
-
-      <div class="d-flex navigation "  >
-          {% block nav-tabs %}   {% endblock %}
-            <form method="post" action="{% url 'search' %}" class="flex-fill d-flex"   >
-                {% csrf_token %}
-                <input type="text"    name="search"  placeholder={% trans 'Поиск'  %} class=" flex-fill search "  >
-                <button type="submit"
-                        class="search-but"  ><img   src="{% static 'icons/search24.svg' %}" alt="Card image" style="height:27px;"></button>
-            </form>
-
-      </div>
+  <div class=" container-fluid  pt-3 px-5  " style="min-height:900px;" >
+    {% block nav-tabs %}   {% endblock %}
+    {% block content %}  {% endblock %}
 
 
+    {% block box %}  {% endblock %}
 
 
-
-
-      <div class=" container"   >
-            {% if gender %}
-                <div class="row center" >
-                    <div class="col-sm-2 " >
-                            <br>
-                            {% for g in gender %}
-                                <a class="navigate_gender" href="{% url 'type' g.id_gender  %}"> {{g.gender}}</a> <br>
-                                {% for t in g.g_type.all %}
-
-                                    <a class="nav_type_point" href="{% url 'footwear' g.id_gender t.id_type %}">  --
-                                    <span class="navigate_type">  {{t.type }} </span>
-                                    </a>
-                                    <br>
-
-                                {% endfor %}
-                            {% endfor %}
-                            {% block filter %} {% endblock %}
-
-
-
-
-
-
-                    </div>
-                {% block content %}  {% endblock %}
-
-                </div>
-            {% endif %}
-          {% block box %}  {% endblock %}
-
-
-      </div>
   </div>
 
 
 
 
-
-
+{% block footer %}
+{% endblock %}
 
 
 

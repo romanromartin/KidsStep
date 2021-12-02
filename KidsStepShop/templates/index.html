@@ -4,35 +4,39 @@
 
 
 
-{% block nav-tabs %}
-        <a class="nav-"  href="{% url 'index'  %}">{% trans 'Главная'  %}</a>
-
-{% endblock %}
-
 
 {% block content %}
-    <div class="col-sm-10 " >
-        <div class="fotorama slider" data-autoplay="true" data-transition="crossfade"
-             data-clicktransition="crossfade" data-nav="false">
-            {% for a in adv %}
-            <img src=" /{{ a }} ">
-            {% endfor %}
+    <div class="row mb-3 ">
+        <div class="fotorama  mx-auto  " data-autoplay="true" data-transition="crossfade"
+                 data-clicktransition="crossfade" data-nav="false">
+                {% for a in adv %}
+                <img src=" /{{ a }} ">
+                {% endfor %}
         </div>
 
-        {% for pop in popular %}
 
-                <a href="{% url 'footwear_detail' pop.footwear_gender.first.id_gender pop.footwear_type.id_type pop.id %}" >
-                    <div class=" card_fw"  >
-                        <div style="height:180px;">
-                        <img class=" card_fw_image  " src=" /{{ pop.image.first.image }} " alt="Card image">
-                        </div>
-                        <span class="card_fw_text" > {{ pop.name }}</span>
-                        <div class="card_size_block" >
-                        {% for s in pop.size.all %}
-                            <span class="card_fw_size" > {{ s }}</span>
-                        {% endfor %}
-                        </div>
-                        <div class="gender_block" >
+    </div>
+
+    <div class="row px-2" >
+        <div class="col-12">
+            <h5 class="card_self">Самые популярные</h5>
+        </div>
+        {% for pop in popular %}
+        <div class="col-xl-2 col-lg-3 col-sm-6 mb-1 px-1 ">
+            <div class="card shadow-sm bg-light" style="height:400px;" >
+                <a href="{% url 'footwear_detail' pop.footwear_gender.first.id_gender pop.footwear_type.id_type pop.id %}" class="card_self">
+                    <img src="/{{ pop.image.first.image }}" class="card-img-top float-bottom" alt="...">
+                  <div class="card-body " >
+                    <h6 class="card-title mb-1">{{ pop.name }}</h6>
+                    <img src="{% static 'icons/size.svg' %}" alt="Logo" style="width:25px;">
+                    {% for s in pop.size.all %}
+
+                      <span style="font-size:90%;" > {{ s }}</span>
+                    {% endfor %}
+                     <h5 class="price-block mb-0">{{ pop.price}} {% trans 'грн.'  %}</h5>
+                  </div>
+
+                  <div class="gender_block" >
                             {% for g in pop.footwear_gender.all %}
                                 {% if g.id_gender == 'girl'%}
                                 <img style="height:28px;" src="{% static 'icons/girl.svg' %}" alt="Card image">
@@ -41,66 +45,65 @@
                                 {% endif %}
                             {% endfor %}
                         </div>
-
-                        <div class="card_fw_price_block">
-                           <p style="margin-top:5px;" >{{pop.price}} {% trans 'грн.'  %}</p>
-                        </div>
-
-                    </div>
                 </a>
+            </div>
+        </div>
         {% endfor %}
+    </div>
+
         <!--        page navigation-->
-        <div style="display: flex;" >
+        {%  if popular.paginator.num_pages > 1 %}
+            <div style="display: flex;" class="mb-3" >
             {% if popular.has_previous %}
                 <div class="page_unit"  >
                     <a href="?page={{ popular.previous_page_number }}" >
                         <img src="{% static 'icons/arrow-left.svg' %}" alt="arrow-left"
-                             style="height:20px; width:20px; margin-top:3px; "  ></a>
+                             style="height:20px; width:20px;  "  ></a>
                 </div>
                 <div class="page_unit" >
-                    <a href="?page=1" class="page_">1</a>
+                    <a href="?page=1" >1</a>
                 </div>
                 {% if dots_start%}
                     <div class="page_unit" style="border: 0px solid orange;">
-                        <a  class="page_" >...</a>
+                        <a   >...</a>
                     </div>
                 {% endif %}
                 {% if   popular.number  != 2 %}
                     <div class="page_unit" >
-                        <a href="?page={{ popular.previous_page_number }}" class="page_">{{ popular.previous_page_number }}</a>
+                        <a href="?page={{ popular.previous_page_number }}" >{{ popular.previous_page_number }}</a>
                     </div>
                 {% endif %}
             {% endif %}
                 <div class="page_unit" style="border: 2px solid orange;">
-                    <a  class="page_" style="color:orange; ">{{ popular.number }}</a>
+                    <a   style="color:orange; ">{{ popular.number }}</a>
                 </div>
             {% if popular.has_next %}
                 {% if popular.next_page_number != popular.paginator.num_pages %}
                     <div class="page_unit" >
-                        <a href="?page={{ popular.next_page_number }}" class="page_">{{ popular.next_page_number }}</a>
+                        <a href="?page={{ popular.next_page_number }}" >{{ popular.next_page_number }}</a>
                     </div>
                 {% endif %}
                 {% if dots_end%}
                     <div class="page_unit" style="border: 0px solid orange;">
-                        <a  class="page_" >...</a>
+                        <a   >...</a>
                     </div>
                 {% endif %}
                 <div class="page_unit" >
-                    <a href="?page={{ popular.paginator.num_pages }}" class="page_">{{ popular.paginator.num_pages }}
+                    <a href="?page={{ popular.paginator.num_pages }}" >{{ popular.paginator.num_pages }}
                     </a>
                 </div>
                 <div class="page_unit" >
                     <a href="?page={{ popular.next_page_number }}" >
                         <img src="{% static 'icons/arrow-right.svg' %}" alt="arrow-left"
-                             style="height:20px; width:20px; margin-top:3px; " >
+                             style="height:20px; width:20px;  " >
                     </a>
                 </div>
             {% endif %}
         </div>
+        {% endif %}
 
 
 
-    </div>
 {% endblock %}
 
 {% block filter %}
@@ -126,4 +129,11 @@
 
 
 
+{% endblock %}
+
+
+{% block footer %}
+
+<div class=" container-fluid bg-secondary bg-gradient  " style="height: 96px; " >
+</div>
 {% endblock %}

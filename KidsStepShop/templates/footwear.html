@@ -3,83 +3,107 @@
 {% load i18n %}
 
 {% block nav-tabs %}
-    <a class="nav-"  href="{% url 'index'  %}">{% trans 'Главная'  %}</a>
+    <a class="text-secondary"  href="{% url 'index'  %}">{% trans 'Главная'  %}</a>
     <img class="nav_arrow" src="{% static 'icons/nav_arrow.svg' %}" alt="Card image">
-        <a class="nav-" href="{% url 'type' nav_gender.id_gender  %}" >{{nav_gender.gender}}</a>
+        <a class="text-secondary" href="{% url 'type' nav_gender.id_gender  %}" >{{nav_gender.gender}}</a>
     <img class="nav_arrow" src="{% static 'icons/nav_arrow.svg' %}" alt="Card image">
-        <a class="nav-"  id="active" >{{nav_type.type}}</a>
+        <a id="nav_active" >{{nav_type.type}}</a>
 {% endblock %}
 
 
 {% block content %}
-    <div class="col-sm-10 body_ ">
-        {% if footwear_selected %}
-            {% for f in footwear_selected  %}
-                <a href="{% url 'footwear_detail' nav_gender.id_gender nav_type.id_type f.id %}" >
-                    <div class=" card_fw"  >
-                        <div style="height:180px;">
-                        <img class=" card_fw_image  " src=" /{{ f.image.first.image }} " alt="Card image">
+   <div class="row px-2" >
+
+    {% if footwear_selected %}
+       {% for f in footwear_selected  %}
+        <div class="col-xl-2 col-lg-3 col-sm-6 mb-1 px-1 ">
+            <div class="card shadow-sm bg-light" style="height:400px;" >
+                <a href="{% url 'footwear_detail' nav_gender.id_gender nav_type.id_type f.id %}" class="card_self">
+                    <img src="/{{ f.image.first.image }}" class="card-img-top float-bottom" alt="...">
+                  <div class="card-body " >
+                    <h6 class="card-title mb-1">{{ f.name }}</h6>
+                    <img src="{% static 'icons/size.svg' %}" alt="Logo" style="width:25px;">
+                    {% for s in f.size.all %}
+
+                      <span style="font-size:90%;" > {{ s }}</span>
+                    {% endfor %}
+                     <h5 class="price-block mb-0">{{f.price}} {% trans 'грн.'  %}</h5>
+                  </div>
+
+                  <div class="gender_block" >
+                            {% for g in f.footwear_gender.all %}
+                                {% if g.id_gender == 'girl'%}
+                                <img style="height:28px;" src="{% static 'icons/girl.svg' %}" alt="Card image">
+                                {% elif g.id_gender == 'boy'%}
+                                <img style="height:30px;"  src="{% static 'icons/boy.svg' %}" alt="Card image">
+                                {% endif %}
+                            {% endfor %}
                         </div>
-                        <span class="card_fw_text" > {{ f.name }}</span>
-                        <div class="card_size_block" >
-                        {% for s in f.size.all %}
-                            <span class="card_fw_size" > {{ s }}</span>
-                        {% endfor %}
-                        </div>
-                        <div class="card_fw_price_block">
-                           <p style="margin-top:5px;" >{{f.price}} {% trans 'грн.'  %}</p>
-                        </div>
-                    </div>
                 </a>
-            {%  endfor %}
-        {% endif %}
+            </div>
+        </div>
+       {% endfor %}
+    {% endif %}
+
+
+
+    </div>
+
         <!--        page navigation-->
-        <div style="display: flex;" >
+        {% if footwear_selected.paginator.num_pages > 1 %}
+            <div style="display: flex;" class="mb-3" >
             {% if footwear_selected.has_previous %}
                 <div class="page_unit"  >
                     <a href="?page={{ footwear_selected.previous_page_number }}" >
                         <img src="{% static 'icons/arrow-left.svg' %}" alt="arrow-left"
-                             style="height:20px; width:20px; margin-top:3px; "  ></a>
+                             style="height:20px; width:20px;  "  ></a>
                 </div>
                 <div class="page_unit" >
-                    <a href="?page=1" class="page_">1</a>
+                    <a href="?page=1" >1</a>
                 </div>
                 {% if dots_start%}
                     <div class="page_unit" style="border: 0px solid orange;">
-                        <a  class="page_" >...</a>
+                        <a   >...</a>
                     </div>
                 {% endif %}
                 {% if   footwear_selected.number  != 2 %}
                     <div class="page_unit" >
-                        <a href="?page={{ footwear_selected.previous_page_number }}" class="page_">{{ footwear_selected.previous_page_number }}</a>
+                        <a href="?page={{ footwear_selected.previous_page_number }}" >{{ footwear_selected.previous_page_number }}</a>
                     </div>
                 {% endif %}
             {% endif %}
                 <div class="page_unit" style="border: 2px solid orange;">
-                    <a  class="page_" style="color:orange; ">{{ footwear_selected.number }}</a>
+                    <a   style="color:orange; ">{{ footwear_selected.number }}</a>
                 </div>
             {% if footwear_selected.has_next %}
                 {% if footwear_selected.next_page_number != footwear_selected.paginator.num_pages %}
                     <div class="page_unit" >
-                        <a href="?page={{ footwear_selected.next_page_number }}" class="page_">{{ footwear_selected.next_page_number }}</a>
+                        <a href="?page={{ footwear_selected.next_page_number }}" >{{ footwear_selected.next_page_number }}</a>
                     </div>
                 {% endif %}
                 {% if dots_end%}
                     <div class="page_unit" style="border: 0px solid orange;">
-                        <a  class="page_" >...</a>
+                        <a   >...</a>
                     </div>
                 {% endif %}
                 <div class="page_unit" >
-                    <a href="?page={{ footwear_selected.paginator.num_pages }}" class="page_">{{ footwear_selected.paginator.num_pages }}
+                    <a href="?page={{ footwear_selected.paginator.num_pages }}" >{{ footwear_selected.paginator.num_pages }}
                     </a>
                 </div>
                 <div class="page_unit" >
                     <a href="?page={{ footwear_selected.next_page_number }}" >
                         <img src="{% static 'icons/arrow-right.svg' %}" alt="arrow-left"
-                             style="height:20px; width:20px; margin-top:3px; " >
+                             style="height:20px; width:20px;  " >
                     </a>
                 </div>
             {% endif %}
         </div>
-    </div>
+        {% endif %}
+{% endblock %}
+
+
+{% block footer %}
+
+<div class=" container-fluid bg-secondary bg-gradient  " style="height: 96px;">
+</div>
 {% endblock %}

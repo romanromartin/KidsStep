@@ -27,7 +27,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'cg#p$g+j9tax!#a3cup@1$8obt2_+&k3q+pmu)5%asj6yjpkag')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 # DEBUG = bool(os.environ.get('DJANGO_DEBUG', True))
 ALLOWED_HOSTS = ['kidsstep.herokuapp.com', '127.0.0.1']
 
@@ -90,6 +90,8 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 
 # Password validation
@@ -168,7 +170,7 @@ EMAIL_HOST_PASSWORD = '32JJhdeub7ej5EO'
 EMAIL_PORT = 587
 
 # LOGIN_URL = '/kidsstep/registration/sign_in'
-LOGIN_URL = '/registration/login'
+LOGIN_URL = '/sign_in'
 
 
 USE_DJANGO_JQUERY = True
@@ -179,4 +181,5 @@ DATABASES['default'].update(db_from_env)
 
 
 
-
+CART_SESSION_ID = 'products_in_cart'
+SESSION_EXPIRE_AT_BROWSER_CLOSE =False

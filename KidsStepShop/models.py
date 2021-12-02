@@ -80,9 +80,9 @@ class Brend(models.Model):
 
 class Footwear(TranslatableModel):
     id = models.CharField(primary_key=True, max_length=10)
-    footwear_brend = models.ForeignKey('Brend', on_delete=models.SET_NULL, null=True, default='0')
+    footwear_brend = models.ForeignKey('Brend', on_delete=models.CASCADE, null=True, default='undefined')
     footwear_gender = models.ManyToManyField('Gender')
-    footwear_type = models.ForeignKey(Type, on_delete=models.SET_NULL, null=True, default='0')
+    footwear_type = models.ForeignKey(Type, on_delete=models.CASCADE, null=True, default='undefined')
     popular = models.IntegerField(null=False, default='0')
     image = models.ManyToManyField('Image')
     price = models.IntegerField(default='0')
@@ -90,6 +90,7 @@ class Footwear(TranslatableModel):
     size = models.ManyToManyField(Size)
     translations = TranslatedFields(
         name=models.CharField(max_length=100, null=False))
+    in_use = models.BooleanField(default=True)
 
 
     class Meta:
@@ -119,14 +120,15 @@ class Image(models.Model):
 
 class Product(models.Model):
     id_product = models.AutoField(primary_key=True, auto_created=True)
-    user_name = models.CharField(max_length=100, null=True)
     product = models.ForeignKey('Footwear', max_length=100, null=True, on_delete=models.DO_NOTHING)
+    order = models.ForeignKey('Order', max_length=100, null=True,on_delete=models.CASCADE)
     size = models.ForeignKey('Size', max_length=100, null=True, on_delete=models.CASCADE)
-    prod_status = models.ForeignKey('StatusProduct', null=True, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=1, null=False)
 
-    def prod_name(self):
-        return self.product.name
-    prod_name.short_description = 'Name product'
+
+    # def prod_name(self):
+    #     return self.product.name
+    # prod_name.short_description = 'Name product'
 
     # def prod_gender(self):
     #     return self.product.footwear_gender
@@ -137,31 +139,23 @@ class Product(models.Model):
 
     # prod_type.short_description = 'Type'
 
-class StatusProduct(TranslatableModel):
-    translations = TranslatedFields(
-        status=models.CharField(primary_key=True, max_length=30, ))
-
-    # def __str__(self):
-    #     return self.status
-
 
 class Order(models.Model):
     id_order = models.AutoField(primary_key=True, auto_created=True)
     article = models.IntegerField(default='0000')
     user_order = models.CharField(max_length=100, null=True, default='аноним')
-    product = models.ManyToManyField('Product')
     delivery = models.CharField(max_length=100, null=True)
     status = models.ForeignKey('StatusOrder', null=True, on_delete=models.CASCADE)
-    total_price = models.IntegerField(null=True)
+
 
 
 class StatusOrder(TranslatableModel):
+    id_status_order = models.CharField(primary_key=True, max_length=20, null=False, )
     translations = TranslatedFields(
-        status=models.CharField(primary_key=True, max_length=30, ))
+        status=models.CharField(max_length=40, default='0'))
 
     # def __str__(self):
     #     return self.status
-
 
 
 

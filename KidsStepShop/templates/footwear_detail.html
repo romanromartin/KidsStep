@@ -3,50 +3,68 @@
 {% load i18n %}
 
 {% block nav-tabs %}
-    <a class="nav-"  href="{% url 'index'  %}">{% trans 'Главная'  %}</a>
+    <a class="text-secondary"  href="{% url 'index'  %}">{% trans 'Главная'  %}</a>
     <img class="nav_arrow" src="{% static 'icons/nav_arrow.svg' %}" alt="Card image">
-        <a class="nav-" href="{% url 'type' nav_gender.id_gender  %}" >{{nav_gender.gender}}</a>
+        <a class="text-secondary" href="{% url 'type' nav_gender.id_gender  %}" >{{nav_gender.gender}}</a>
     <img class="nav_arrow" src="{% static 'icons/nav_arrow.svg' %}" alt="Card image">
-        <a class="nav-"  href="{% url 'footwear' nav_gender.id_gender nav_type.id_type  %}" >{{nav_type.type}}</a>
+        <a class="text-secondary"  href="{% url 'footwear' nav_gender.id_gender nav_type.id_type  %}" >{{nav_type.type}}</a>
     <img class="nav_arrow" src="{% static 'icons/nav_arrow.svg' %}" alt="Card image">
-    <a class="nav-" id="active" >{{fw_sel.name}}</a>
+    <a  id="nav_active" >{{fw_sel.name}}</a>
 
 {% endblock %}
 
 
 {% block content %}
-    <div class="col-sm-7 " >
-        <div class="fotorama  "  data-transition="crossfade"
-             data-clicktransition="crossfade" data-nav="thumbs" style=" margin:10px; height: auto; width: 90%; " >
-            {%for im in fw_sel.image.all%}
-            <img src=" /{{ im.image }} " alt="Card image"  >
-            {%endfor%}
+    <div class="row">
+        <div class="col-lg-2 d-none d-md-inline"></div>
+        <div class="col-lg-6  " >
+            <div class="fotorama mx-auto  "  data-transition="crossfade"
+                 data-clicktransition="crossfade" data-nav="thumbs" style=" margin:10px; height: auto; width: 90%; " >
+                {%for im in fw_sel.image.all%}
+                <img src=" /{{ im.image }} " alt="Card image"  >
+                {%endfor%}
+            </div>
+
         </div>
 
+        <div class="col-lg-3 card_self  "  >
+            <h6 class="mt-5 mb-3 "> {{ fw_sel.name }}</h6>
+            <h2> {{ fw_sel.price }} {% trans 'грн.'  %}  </h2>
+
+            <form method="post" >
+                {% csrf_token %}
+                <a >{% trans 'Размер'  %}   </a> <br>
+                    <div class="radio mb-3">
+                    {% for size in fw_sel.size.all %}
+                        <input label={{ size }}  type="radio" id="{{ size }}" name="size" value="{{ size }}"  style="margin-bottom:3px;">
+
+                    {% endfor %}
+
+                    </div>
+                <a  class="mb-1 card_self" >{% trans 'Количество'  %}   </a>
+                <select class="form-select card_self mb-3" aria-label="Default select example" name="quantity">
+                  <option selected>1</option>
+                   {% for q in fw_quantity %}
+                      <option value="{{ q }}">{{ q }}</option>
+                    {% endfor %}
+                </select>
+
+                <p class="card_self" >{% trans 'Артикул'  %}  {{fw_sel.id}}</p>
+                <br>
+
+                {% if form_error != '' %} <a style="color: red"> {{form_error}}  </a>  <br>  {% endif %}
+
+                <input class="submit "  type="submit" name="add_to_cart" value="{% trans 'Добавить в корзину'  %}" >
+            </form>
+
+        </div>
+        <div class="col-lg-1 d-none d-md-inline "></div>
     </div>
-    <div class="col-sm-3 " style="color:white; text-shadow: 0px 0px 10px rgba(20, 30, 100, 0.7);" >
-        <p style="margin-top:60px;"> {{ fw_sel.name }}</p>
-        <h2> {{ fw_sel.price }} {% trans 'грн.'  %}  </h2>
-
-        <form method="post" >
-            {% csrf_token %}
-            <a style="color:orange;">{% trans 'Размер'  %}   </a> <br>
-                <div class="radio">
-                {% for size in fw_sel.size.all %}
-                    <input label={{ size }}  type="radio" id="{{ size }}" name="size" value="{{ size }}"  style="margin-bottom:3px;">
-
-                {% endfor %}
-
-                </div>
+{% endblock %}
 
 
-            <a style=" font-weight: normal;">{% trans 'Артикул'  %}  {{fw_sel.id}}</a>
+{% block footer %}
 
-            {% if form_error != '' %} <a style="color: yellow"> {{form_error}}  </a>  <br>  {% endif %}
-
-            <button class="submit" type="submit">{% trans 'Добавить в корзину'  %}</button>
-        </form>
-
-    </div>
-
+<div class=" container-fluid bg-secondary bg-gradient  " style="height: 96px;">
+</div>
 {% endblock %}

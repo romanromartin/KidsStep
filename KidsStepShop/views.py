@@ -1,10 +1,11 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 import xml.etree.ElementTree as ET
-from .models import Gender, Type, Footwear, Product, Color, Size, \
-    AdvSlider, Order, StatusOrder, StatusProduct, Profile, Brend, TypePrw, Image
+from .models import Gender, Type, Footwear, Color, Size, \
+    AdvSlider, Order, StatusOrder, Profile, Brend, TypePrw, Image, Product
 from django.contrib.auth import authenticate, login, logout, models
-from KidsStepShop.forms import SignUpForm, LogInForm, ResetPasswordForm
+from KidsStepShop.forms import SignUpForm, LogInForm, ResetPasswordForm, OrderForm
 from django.conf import settings
+from Base.settings import CART_SESSION_ID
 import random
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.utils.translation import ugettext as _
@@ -13,7 +14,7 @@ import psycopg2
 from PIL import Image as ImagePIL
 from urllib.request import urlopen
 import KidsStepShop.db_handler as handler
-
+from django.contrib.auth.models import User
 
 gender = Gender.objects.all()
 types = Type.objects.all()
@@ -41,15 +42,16 @@ def index(request):
         popular_footwear = paginator.page(paginator.num_pages)
     adv = AdvSlider.objects.all()
     return render(request, 'index.html',
-                  context={'gender': gender, 'popular': popular_footwear, 'adv': adv, 'dots_start': dots_start, 'dots_end': dots_end})
+                  context={'gender': gender, 'popular': popular_footwear, 'adv': adv, 'dots_start': dots_start,
+                           'dots_end': dots_end})
 
 
 def type(request, id_gender):
     gender = Gender.objects.all()
-    print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!',id_gender)
+    print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', id_gender)
     prw_list = TypePrw.objects.filter(prw_gender=id_gender)
     return render(request, 'type.html',
-                  context={'gender': gender,   'nav_gender': navigation_gender(id_gender), 'prw_list': prw_list})
+                  context={'gender': gender, 'nav_gender': navigation_gender(id_gender), 'prw_list': prw_list})
 
 
 def footwear(request, id_gender, id_type):
@@ -75,7 +77,8 @@ def footwear(request, id_gender, id_type):
 
     return render(request, 'footwear.html',
                   context={'gender': gender, 'types': types, 'footwear_selected': page_footwear,
-                           'nav_gender': navigation_gender(id_gender), 'nav_type': navigation_type(id_type),'dots_start': dots_start, 'dots_end': dots_end})
+                           'nav_gender': navigation_gender(id_gender), 'nav_type': navigation_type(id_type),
+                           'dots_start': dots_start, 'dots_end': dots_end})
 
 
 def footwear_detail(request, id_gender, id_type, id):
@@ -84,24 +87,23 @@ def footwear_detail(request, id_gender, id_type, id):
     fw_sel = Footwear.objects.get(id=id)
     fw_sel.popular += 1
     fw_sel.save()
+
+    fw_quantity = list(range(2, 11))
     if request.method == 'POST':
-        if request.user.is_authenticated:
+        if request.POST.get("add_to_cart"):
             if request.POST.get("size") is None:
                 err = 'Не выбран размер '
             else:
-                prod = Product()
-                prod.user_name = request.user.username
-                prod.product = fw_sel
-                prod.size = Size.objects.get(size=request.POST.get("size"))
-                prod.prod_status = StatusProduct.objects.get(status='Корзина')
-                prod.save()
+                foo = [[id, id_gender, id_type, request.POST.get("size"), request.POST.get("quantity")]]
+                if request.session.get(CART_SESSION_ID):
+                    request.session[CART_SESSION_ID] += foo
+                else:
+                    request.session[CART_SESSION_ID] = foo
                 return redirect('basket')
-        else:
-            return redirect('%s?next=%s' % (settings.LOGIN_URL, request.path))
     return render(request, 'footwear_detail.html',
                   context={'gender': gender, 'types': types, 'nav_type': navigation_type(id_type),
                            'nav_gender': navigation_gender(id_gender),
-                           'form_error': err, 'fw_sel': fw_sel})
+                           'form_error': err, 'fw_sel': fw_sel, 'fw_quantity': fw_quantity})
 
 
 def navigation_gender(id_gender):
@@ -120,80 +122,109 @@ def navGender(id_gender):
 
 
 def basket(request):
-    total_price = 0
-    user_product = Product.objects.filter(user_name=request.user.username, prod_status='Корзина')
-    for user_ in user_product:
-        total_price += user_.product.price
+    total_price, user_product = make_product_list(request)
     if request.method == 'POST':
         if request.POST.get("delete"):
-            prod = Product.objects.filter(id_product=request.POST.get("delete"))
-            prod.delete()
+            request.session.get(CART_SESSION_ID).pop(int(request.POST.get("delete")))
+            request.session[CART_SESSION_ID] = request.session.get(CART_SESSION_ID)
             return redirect('basket')
+        if request.POST.get("to_order"):
+            return redirect('order')
     return render(request, 'basket.html', context={'user_product': user_product, 'total': total_price})
+
+
+def make_product_list(request):
+    total_price = 0
+    ind = 0
+    user_product = []
+    if request.session.get(CART_SESSION_ID):
+        for prod in request.session.get(CART_SESSION_ID):
+            product = Footwear.objects.get(id=prod[0])
+            total_price += product.price * int(prod[4])
+            user_product.append([ind, prod[1], prod[2], product, prod[3], prod[4]])
+            ind += 1
+    return total_price, user_product
+
+
+def anonimus(request):
+    us = User()
+    us.username = 'dhsdw2342sdfsf'
+    us.password = 'anonimus'
+    us.save()
+    return render(request, 'registration/anonimus.html')
+
+
+def randomizer(inputQuery):
+    new_num = 0
+    num_list = []
+    while new_num == 0:
+        number = random.randrange(1000, 9999)
+        for article_in_use in inputQuery:
+            num_list.append(article_in_use.article)
+            if number not in num_list:
+                new_num = number
+    return new_num
 
 
 def order(request):
     err = ''
-    total_price = 0
-    user_product = Product.objects.filter(user_name=request.user.username, prod_status='Корзина')
-
-    for user_ in user_product:
-        total_price += user_.product.price
+    total_price, user_product = make_product_list(request)
     if request.method == 'POST':
-        if request.POST.get("name_delivery"):
-            return render(request, 'order.html',
-                          context={'user_product': user_product, 'total': total_price,
-                                   'name_delivery': request.POST.get("name_delivery"), 'form_error': err})
+        orderForm = OrderForm(request.POST)
         if request.POST.get("done"):
-            if request.POST.get("city-delivery") == '':
-                err += 'Не указан город '
-                if request.POST.get("done") == 'nova-poshta':
-                    if request.POST.get("department-delivery") == '':
-                        err += 'и отделение '
-                elif request.POST.get("done") == 'ukrposhta':
-                    if request.POST.get("index-delivery") == '':
-                        err += 'и индекс '
-            elif request.POST.get("done") == 'nova-poshta' and request.POST.get("department-delivery") == '':
-                err += 'Не указано отделение '
-            elif request.POST.get("done") == 'ukrposhta' and request.POST.get("index-delivery") == '':
-                err += 'Не указан индекс '
+            orderSet = Order()
+            if request.user.is_authenticated:
+                orderSet.user_order = request.user.username
             else:
-                new_article = 0
-                article_in_use_list = []
-                while new_article == 0:
+                new_num = 0
+                while new_num == 0:
                     number = random.randrange(1000, 9999)
-                    for article_in_use in Order.objects.all():
-                        article_in_use_list.append(article_in_use.article)
-                    if number not in article_in_use_list:
-                        new_article = number
-                ord = Order()
-                ord.article = new_article
-                ord.user_order = request.user.username
-                if request.POST.get("done") == 'nova-poshta':
-                    ord.delivery = 'Новая почта ' + request.POST.get("city-delivery") + 'Отд.№ ' + request.POST.get(
-                        "department-delivery")
-                elif request.POST.get("done") == 'ukrposhta':
-                    ord.delivery = 'Укрпочта ' + request.POST.get("city-delivery") + 'Отд.№ ' + request.POST.get(
-                        "index-delivery")
-                ord.status = StatusOrder.objects.get(status='В работе')
-                ord.total_price = total_price
-                ord.save()
-                for pr in user_product:
-                    ord.product.add(pr.id_product)
-                    pr.prod_status = StatusProduct.objects.get(status='Заказ')
-                    pr.save()
-                ord.save()
-                return redirect('order_done', new_article)
-            return render(request, 'order.html', context={'user_product': user_product, 'total': total_price,
-                                                          'name_delivery': request.POST.get("done"), 'form_error': err})
+                    for user in User.objects.all():
+                        if user != 'anonimus_' + str(number):
+                            new_num = number
+                us = User.objects.create(first_name=orderForm['username'].data,
+                                         username='anonimus_' + str(new_num),
+                                         password='anonimus')
+                us.save()
+                us.refresh_from_db()
+                us.profile.phone = orderForm['phone'].data
+                us.save()
+                orderSet.user_order = us.username
+            orderSet.delivery = orderForm['delivery'].data \
+                                + ', ' + orderForm['city'].data \
+                                + ', ' + orderForm['department'].data
+            # orderSet.status = StatusOrder.objects.get(status='В работе')
+            new_article = 0
+            article_in_use_list = []
+            for article_in_use in Order.objects.all():
+                article_in_use_list.append(article_in_use.article)
+            while new_article == 0:
+                number = random.randrange(1000, 9999)
+                if number not in article_in_use_list:
+                    new_article = number
+            orderSet.article = new_article
+            orderSet.status = StatusOrder.objects.get(id_status_order='new_order')
+            orderSet.save()
 
+            for prod in user_product:
+                print(prod)
+                product_in_order = Product()
+                product_in_order.order = Order.objects.get(article=orderSet.article)
+                product_in_order.product = prod[3]
+                product_in_order.size = Size.objects.get(size=prod[4])
+                product_in_order.quantity = prod[5]
+                product_in_order.save()
+
+            request.session[CART_SESSION_ID] = request.session.get(CART_SESSION_ID).clear()
+            return redirect('order_done', new_article)
+    else:
+        orderForm = OrderForm()
     return render(request, 'order.html',
-                  context={'user_product': user_product, 'total': total_price, 'form_error': err})
+                  context={'user_product': user_product, 'total': total_price, 'form_error': err, 'form': orderForm,
+                           'anonimus_name': '', 'anonimus_phone': ''})
 
 
-def order_done(request, article):
-    ord = Order.objects.get(article=article)
-    return render(request, 'order_done.html', context={'article': article, 'order': ord})
+
 
 
 def profile(request):
@@ -203,6 +234,7 @@ def profile(request):
 def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
+        print(request.POST)
         if form.is_valid():
             user = form.save()
             user.refresh_from_db()  # load the profile instance created by the signal
@@ -238,11 +270,23 @@ def logoutUser(request):
     return redirect(request.GET['next'])
 
 
+
+def order_done(request, article):
+    ord = Order.objects.get(article=article)
+    total_price = 0
+    for n in ord.product_set.all():
+        total_price += n.quantity*n.product.price
+
+    print(total_price)
+    return render(request, 'order_done.html',
+                  context={'article': article, 'order': ord, 'total_price': total_price})
+
+
 def managment(request):
     orders = Order.objects.all()
     stat = StatusOrder.objects.all()
     for ord in orders:
-        if ord.product.count() < 1:
+        if ord.product_set.all().count() < 1:
             ord.delete()
     orders = Order.objects.all()
     users_ = models.User.objects.all()
@@ -261,7 +305,7 @@ def managment(request):
             return redirect('managment')
         if request.POST.get("change_status"):
             order_status_change = Order.objects.get(id_order=request.POST.get("order_id"))
-            new_status = StatusOrder.objects.get(status=request.POST.get("change_status"))
+            new_status = StatusOrder.objects.get(translations__status=request.POST.get("change_status"))
             order_status_change.status = new_status
             order_status_change.save()
             return redirect('managment')
@@ -280,12 +324,31 @@ def search(request):
             s_f.append(foot)
         elif request.POST.get("search").lower() in str(foot.footwear_brend).lower():
             s_f.append(foot)
-    print(s_f)
-    return render(request, 'search.html', context={'search': s_f, 'gender': gender, 'types': types, })
+    paginator = Paginator(s_f, 16)
+    page = request.GET.get('page')
+    if not page:
+        page = '1'
+    dots_start = False
+    dots_end = False
+    if int(page) > 3:
+        dots_start = True
+    if int(page) < paginator.num_pages - 2:
+        dots_end = True
+
+    try:
+        page_footwear = paginator.page(page)
+    except PageNotAnInteger:
+        page_footwear = paginator.page(1)
+    except EmptyPage:
+        page_footwear = paginator.page(paginator.num_pages)
+    return render(request, 'search.html',
+                  context={'search': s_f, 'gender': gender, 'types': types,
+                           'dots_start': dots_start, 'dots_end': dots_end, 'footwear_selected': page_footwear,})
 
 
 conn = handler.conn
 cur = handler.cur
+
 
 def db_handler(request):
     if request.method == 'POST':
@@ -296,6 +359,9 @@ def db_handler(request):
         elif request.POST.get("refresh_size"):
             handler.drop_size()
             handler.add_sizes()
+        elif request.POST.get("refresh_status_order"):
+            handler.drop_status_order()
+            handler.add_status_order()
         elif request.POST.get("refresh_adv_slider"):
             handler.drop_advslider()
             handler.add_advslider()
@@ -307,7 +373,7 @@ def db_handler(request):
             handler.add_vendor()
             handler.add_footwear()
         elif request.POST.get("add_footwear"):
-            handler.add_footwear()
+            print(handler.translate_string('Добавить Нижний Колонтитул на каждой странице с текстом', from_lang='ru', to_lang='en'))
 
     return render(request, 'db_handler.html')
 
@@ -318,9 +384,3 @@ size_list = []
 tree = ET.parse('static/xml/index.xml')
 cat = tree.findall("shop/categories/category[@parentId='1137']")
 cat += tree.findall("shop/categories/category[@parentId='1139']")
-
-
-
-
-
-

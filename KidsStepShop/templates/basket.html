@@ -1,57 +1,83 @@
 {% extends "base_generic.html" %}
 {% load static %}
 {% load i18n %}
-
-{% block nav-tabs %}
-    <a class="nav-"  href="{% url 'index'  %}">{% trans 'Главная'  %}</a>
-{% endblock %}
+{% load index_tag %}
 
 
 
 {% block box %}
-    <div class=" center "   >
-        <div  >
-            {% if total > 0 %}
-            <H1 style="text-align:center; color:white;">{% trans 'Товары в корзине'  %} </H1>
+
+        <div class="mb-3" >
+            {% if total == 0 %}
+                <h4 class="card_self" style="text-align:center;" > {% trans 'У вас пока нет товаров в корзине'  %} </h4>
             {% else %}
-            <H1 style="text-align:center; color:white;">{% trans 'У вас пока нет товаров в корзине'  %} </H1>
+                <h4 class="card_self" style="text-align:center; "> {% trans 'Товары в корзине'  %} </h4>
             {% endif %}
         </div>
-        <div class="row " style="padding-left:5px;"  >
-            <div class="col-sm-9"  style="margin:0px">
+
+        <div class="row "   >
+
+            <div class="col-md-2 "   ></div>
+            <div class="col-md-8 row  px-0 "  >
                 {% for prod in user_product %}
-                    <div class="row product" >
-                        <div class="col-md-2">
-                            <img class=" product-image"  src=" /{{ prod.product.image }} " alt="Order image" >
-                        </div>
-                        <div class="col-md-8" style="margin-top:5px;">
-                            <h5 class="product-text">{{ prod.product.name }}</h5>
-                            <a style="font-size: 110%;">{% trans 'Размер' %}</a> <span style="font-size: 150%;">{{ prod.size}} </span> <br>
-                        </div>
-                        <div class="col-md-2 " style="background:orange; border-radius:0px 10px 10px 0px; min-height:40px;   ">
-                            <div class="price" >
-                                 <a > <span style="font-size: 200%;" > {{prod.product.price}} </span> {% trans 'грн.' %} </a>
-                            </div>
-                            <div>
-                                <form method="post" >
-                                    {% csrf_token %}
-                                    <input class="delete"  type="submit" id="{{ prod.id_product }}"
-                                           style= "background-image: url({% static 'icons/delete.svg' %});"
-                                           name="delete" value="{{ prod.id_product}}" >
-                                </form>
 
-                            </div>
+                        <div class="col-md-2 bg-white mb-2" style="border-radius: 10px 0px 0px 10px;"  >
+                            <a  href="{% url 'footwear_detail' prod|index:1 prod|index:2 prod|product_id %}">
+                                <img class=" product-image"  src=" /{{ prod|product_image }} " alt="Order image" >
+                            </a>
                         </div>
-                    </div>
+                        <div class="col-md-7 card_self bg-white mb-2"  >
+                            <a  href="{% url 'footwear_detail' prod|index:1 prod|index:2 prod|product_id %}" class="card_self">
+                            <h5 class="product-text">{{prod|product_name}}</h5>
+                            </a>
+                            <a style="font-size: 110%;">{% trans 'Размер' %}</a> <span style="font-size: 150%;">{{ prod|index:4}}   </span> <br>
+                            <a style="font-size: 110%;">{% trans 'Количество' %}</a> <span style="font-size: 150%;"> {{ prod|index:5}}  </span> <br>
+
+                        </div>
+                        <div class="col-md-3 bg-secondary mb-2" style="border-radius: 0px 10px 10px 0px;"  >
+                            {% if prod|index:5 != '1' %}
+                                <div  >
+                                    <p style="color:orange; opacity:70%;" class="mb-0 text-center mt-2 " >
+                                        <span class="price" > {{prod|product_price}} </span> {% trans 'грн.' %}
+                                    </p>
+
+                                    <p style="color:orange; " class="mb-0 text-center ">
+                                    <span style=" opacity:70%;"> x {{ prod|index:5 }} = </span>
+                                    <span class="price" > {{prod|product_price_sum}}  </span>
+                                  {% trans 'грн.' %} </p>
+                                </div>
+                            {% else %}
+                                <div >
+                                     <p class="price text-center mt-4  " > {{prod|product_price}}
+                                         <span style="font-size: 50%;" >   {% trans 'грн.' %} </span>
+                                    </p>
+                                </div>
+                            {% endif %}
+                                    <form method="post" >
+                                        {% csrf_token %}
+                                        <input class="delete"  type="submit" id="{{ prod|index:0 }}"
+                                               style= "background-image: url({% static 'icons/delete.svg' %});"
+                                               name="delete" value="{{ prod|index:0}}" >
+                                    </form>
+                        </div>
                 {% endfor %}
-            </div>
-            {% if total > 0 %}
-                <div class="col-sm-3">
-                        <p style="color:white;">{% trans 'Итого к оплате:'  %} <br> <span style="font-size:200%;" > {{total}} </span> {% trans 'грн.'  %} </p>
-                        <a class="nav-"  href="{% url 'order' %}">{% trans 'Оформить заказ'  %}</a>
+
+                <div class="col-md-12">
+                    {% if total > 0 %}
+                        <p class="card_self text-center">{% trans 'Итого к оплате:'  %}  <span style="font-size:200%;" > {{total}} </span> {% trans 'грн.'  %} </p>
+                        <form method="post" class="w-50 mx-auto" >
+                            {% csrf_token %}
+                            <input class="submit "  type="submit" name="to_order" value="{% trans 'Оформить заказ'  %}" >
+                        </form>
+                    {% endif %}
                 </div>
-            {% endif %}
+
+            </div>
+            <div class="col-md-2"  ></div>
+
+
         </div>
 
-    </div>
+
+
 {% endblock %}

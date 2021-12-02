@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.contrib.admin.filters import SimpleListFilter
-from .models import Gender, Type, Brend, Footwear, Color, Profile, Size, StatusOrder, Product, AdvSlider, Order, \
-    StatusProduct, TypePrw, Image
+from .models import Gender, Type, Brend, Footwear, Color, Profile, Size, StatusOrder, Product, AdvSlider, Order, TypePrw, Image
 from parler.admin import TranslatableAdmin
 
 

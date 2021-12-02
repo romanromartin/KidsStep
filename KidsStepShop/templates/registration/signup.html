@@ -2,15 +2,11 @@
 {% load static %}
 {% load i18n %}
 
-{% block nav-tabs %}
-    <a class="nav-"  href="{% url 'index'  %}">{% trans 'Главная'  %}</a>
-{% endblock %}
-
 
 {% block box %}
-    <div class=" center  "   style="padding-top:50px;" >
-      <div class="top text-center " style="width:50%; " >
-        <h4 style="color:white; ">{% trans 'Регистрация'  %} </h4> <br>
+    <div   class="pt-3" >
+      <div class="top text-center w-50 bg-secondary py-4"    >
+        <h4 style="color:orange; ">{% trans 'Регистрация'  %} </h4> <br>
             <form method="post">
               {% csrf_token %}
                 {% for field in form %}

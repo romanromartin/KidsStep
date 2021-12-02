@@ -5,7 +5,7 @@ import psycopg2
 import xml.etree.ElementTree as ET
 from PIL import Image as ImagePIL
 from .models import Gender, Type, Footwear, Product, Color, Size, \
-    AdvSlider, Order, StatusOrder, StatusProduct, Profile, Brend, TypePrw, Image
+    AdvSlider, Order, StatusOrder,  Profile, Brend, TypePrw, Image
 # from KidsStepShop.translator import make_translation, get_string
 from googletrans import Translator
 
@@ -13,7 +13,7 @@ conn = psycopg2.connect(dbname='d5r03h83qnqmr6', host='ec2-54-155-254-112.eu-wes
                         user="meyvttuswnhyil",
                         password="b88d8d4e9878150f2013cb77683bdefa2e4cb21f05844124f55b77c3349e4b6d")
 cur = conn.cursor()
-heroku = True
+heroku = False
 supplier = {'berni.com.ua': 'b-'}
 
 lang = ['en', 'ru', 'uk']
@@ -60,12 +60,18 @@ color_dict = {'black': ['Black', 'Черный', 'Чорний'],
               'beige': ['Beige', 'Бежевый', 'Бежевий'],
               'gold': ['Golden', 'Золотой', 'Золотий'],
               }
+status_dict = {'new_order': ['New order', 'Новый заказ', 'Нове замовлення'],
+               'dispatch_pending': ['Dispatch pending', 'Ожидает отправки', 'Очикує відправлення'],
+               'order_was_sent': ['Order was sent', 'Заказ отправлен', 'Замовлення відправлено'],
+               'order_received': ['Order received', 'Заказ получен', 'Замовлення отримано'],
+               'return_order': ['Return order', 'Возврат заказа', 'Повернення замовлення']
+               }
 
-# color_dict = {'Черный': 'black', 'Фиолетовый': 'violet', 'Хаки': 'khaki', 'Синий': 'blue', 'Серый': 'grey',
-#               'Серебряный': 'silver', 'Розовый': 'pink', 'Персиковый': 'peach', 'Оранжевый': 'orange',
-#               'Мультиколор': 'multicolor', 'Молочный': 'milk', 'Малиновый': 'crimson', 'Красный': 'red',
-#               'Коричневый': 'brown', 'Зеленый': 'green', 'Желтый': 'yellow', 'Голубой': 'light_blue',
-#               'Бирюзовый': 'turquoise', 'Белый': 'white', 'Бежевый': 'beige', 'Золотой': 'gold'}
+status_prod_list = ['in_cart', 'in_order']
+
+status_order_dict = {
+
+}
 
 id_cat = []
 
@@ -85,6 +91,7 @@ def drop_gender_type():
     Gender.objects.all().delete()
     Type.objects.all().delete()
     TypePrw.objects.all().delete()
+
 
 
 def add_types():
@@ -157,6 +164,25 @@ def drop_size():
         cur.execute(query_clear)
         conn.commit()
     Size.objects.all().delete()
+
+def drop_status_order():
+    if heroku:
+        query_clear = 'TRUNCATE TABLE "KidsStepShop_statusorder" CASCADE; '
+        cur.execute(query_clear)
+        conn.commit()
+    StatusOrder.objects.all().delete()
+
+def add_status_order():
+    query_add_status = ''
+    for s in status_dict:
+        status_to_add = StatusOrder(id_status_order=s)
+        status_to_add.save()
+        for l in lang:
+            status_to_add.set_current_language(l)
+            status_to_add.status = status_dict[s][lang.index(l)]
+            status_to_add.save()
+
+
 
 
 def add_sizes():
@@ -265,6 +291,7 @@ def find_vendor():
                 brend_list.append(of.find('vendor').text)
     return brend_list
 
+translator = Translator()
 
 def add_footwear():
     id_cat = []
@@ -272,7 +299,7 @@ def add_footwear():
         id_cat.append(category.attrib["id"])
     for id_ in id_cat:
         offer = tree.findall("shop/offers/offer[categoryId='" + id_ + "']")
-        for of in offer[21:30]:
+        for of in offer[:20]:
             gender_list = []
             size_list = []
             color_list = []
@@ -327,7 +354,10 @@ def add_footwear():
             for l in lang:
                 foot.set_current_language(l)
                 if l != 'ru':
-                    name = translate_string(of.find('name').text, from_lang='ru', to_lang=l)
+                    # name = 'name'
+                    print('------------!!!', of.find('name').text)
+                    name = translator.translate(text=of.find('name').text, dest=l, src='ru').text
+                    # name = translate_string(of.find('name').text, from_lang='ru', to_lang=l)
                 else:
                     name = of.find('name').text
                 if heroku:
@@ -376,9 +406,18 @@ def add_footwear():
             pic_list = []
             for pic in of.findall('picture'):
                 img = ImagePIL.open(urlopen(pic.text))
+                bg = ImagePIL.new(mode='RGB', size=(800, 800), color=(255, 255, 255))
+                if img.width >= img.height:
+                    img = img.resize(size=(800, round(800*(img.height/img.width))))
+                    bg.paste(im=img, box=(0, round((bg.height - img.height)/2)))
+                else:
+                    img = img.resize(size=(round(800*(img.height/img.width)), 800 ))
+                    bg.paste(im=img, box=(round((bg.width - img.width) / 2), 0))
+
+
                 save_path = 'static/media/footwear/' + id_ + '-' + str(imid) + '.webp'
                 pic_list.append(save_path)
-                img.save(save_path)
+                bg.save(save_path)
                 if heroku:
                     query_add += 'INSERT INTO "KidsStepShop_image" ( "id_image", "image") ' \
                                  + "VALUES ('" + id_ + '-' + str(imid) + "', '" + save_path + "'); " \
@@ -392,6 +431,10 @@ def add_footwear():
 
                 cur.execute(query_add)
                 conn.commit()
+
+
+
+
 
 
 def translate_string(text, from_lang, to_lang):

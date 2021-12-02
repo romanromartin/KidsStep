@@ -1,90 +1,78 @@
 {% extends "base_generic.html" %}
 {% load static %}
 {% load i18n %}
+{% load index_tag %}
 
-{% block nav-tabs %}
-    <a class="nav-"  href="{% url 'index'  %}">{% trans 'Главная'  %}</a>
-{% endblock %}
 
 
 
 
 {% block box %}
 
-    <div class="center" style="padding-top:50px;">
-        <div class="top text-center " style="width:80%; " >
-            <h4 style="color:white; "> {% trans 'Ваш заказ:'  %} </h4>
-                {% for prod in user_product %}
-                    <div class="row" style="background: rgba(70, 90, 200, 0.5); margin:0px; border-radius:5px;  color:orange;">
-                        <div class="col-md-1 " style="text-align:center; margin-top:10px; " >
-                            <p style="margin-bottom:0px;">{{ prod.product.id }} </p>  </div>
-                        <div class="col-md-1"  >  <img style="width:40px;"  src=" /{{ prod.product.image }} " alt="Order image" >  </div>
-                        <div class="col-md-7" style="text-align:center; margin-top:10px; " >  <a>{{ prod.product.name }} </a>     </div>
-                        <div class="col-md-1" style="background-color:{{  prod.color  }};" >  </div>
-                        <div class="col-md-1"  style="text-align:center; margin-top:10px; ">
-                            <a style="margin-bottom:0px;" >{{  prod.size }}</a></div>
-                        <div class="col-md-1" style="text-align:center; margin-top:5px; ">
-                            <p style="margin-bottom:0px; font-size:150%;" >{{  prod.product.price }}</p> </div>
+
+<!--        {% if not request.user.is_authenticated  %}-->
+<!--          {% else %}-->
+<!--        {% endif %}-->
+<!--        <div class="top text-center " style="width:90%; " >-->
+<!--            <h4 class="card_self"> {% trans 'Создать быстрый заказ или авторизация:'  %} </h4>-->
+<!--            <a class="nav-"  href="{% url 'login' %}?next={{request.path}}">{% trans 'Авторизация'  %}</a>-->
+<!--            <a class="nav-"  href="{% url 'anonimus' %}?next={{request.path}}">создать</a>-->
+<!--            <p> или </p>-->
+<!--            <form method="post" >-->
+<!--                    {% csrf_token %}-->
+<!--                <input name="guest_name" value="1" type="text">-->
+<!--                <input name="guest_phone" value="1" type="text">-->
+
+<!--            </form>-->
+
+<!--        </div>-->
+<form method="post"  >
+    {% csrf_token %}
+<div class="row "   >
+    <div class="col-md-2 "   ></div>
+    <div class="col-md-8 row "   >
+        <h4 class="col-md-12 text-center card_self"> {% trans 'Ваш заказ:'  %} </h4>
+         {% for prod in user_product %}
+                        <div class="col-md-1 bg-white mb-1" style="border-radius: 10px 0px 0px 10px;"  >
+                                <img class=" order-image"  src=" /{{ prod|product_image }} " alt="Order image" >
+                        </div>
+                        <div class="col-md-8 card_self bg-white mb-1"  >
+                            <h6 class="product-text mt-1">{{prod|product_name}}</h6>
+                        </div>
+                        <div class="col-md-3 bg-white card_self  mb-1" style="border-radius: 0px 10px 10px 0px;"  >
+                            <div >
+                                <p class=" text-center my-0 "  style=" font-size: 150%;"> {{prod|product_price}}
+                                    <span style="font-size: 50%;" >   {% trans 'грн.' %} </span>
+                                </p>
+                            </div>
+                        </div>
+        {% endfor %}
+
+        <h4 class="col-md-12 text-center card_self"> На сумму: <span > {{total}} {% trans 'грн.' %} </span>  </h4>
+            <form method="post">
+              {% csrf_token %}
+                <div class="col-md-3" ></div>
+                <div class=" login col-md-6   "  >
+                    {% if not request.user.is_authenticated %}
+                    <div class="align-center mb-1">
+                        {{ form.username }}
                     </div>
-                {% endfor %}
-
-            <h4 style="color:white; "> На сумму: <span style="color:orange;"> {{total}} {% trans 'грн.' %} </span>  </h4>
-            <h4 style="color:white; "> {% trans 'Выберите опрератора доставки:' %} </h4>
-            {% if name_delivery %}
-                {% if name_delivery == 'nova-poshta' %}
-                    <form method="post" >
-                    {% csrf_token %}
-                        <div style="margin-bottom:20px;">
-                            <input  class="delivery_operator"  type="submit"  name="name_delivery" value="nova-poshta"
-                                     style="background: url({% static 'logo/nova_poshta.webp' %}); background-size: 200px 54px;background-repeat: no-repeat;
-                                            background-position: center; border: 2px solid #323C8C; border-radius: 23px; " >
-                            <input   class="delivery_operator" type="submit"  name="name_delivery" value="ukrposhta"
-                                     style="background: url({% static 'logo/ukrposhta.webp' %}); background-size: 200px 54px;background-repeat: no-repeat;
-                                            background-position: center; " >
-                        </div>
-                        <p class="login" >
-                            <input    type="text" placeholder={% trans 'Населенный пункт' %}  name="city-delivery" > </p>
-                        <p class="login" >
-                            <input    type="text" placeholder={% trans 'Номер отделения' %}  name="department-delivery" > </p>
-                        {% if form_error != '' %} <a style="color:yellow; "> {{form_error}}  </a>  <br>  {% endif %}
-                        <button class="submit" style="height:40px;; width:60%; margin-top:10px; border-radius:10px; "
-                                type="submit" name="done" value="{{name_delivery}}">{% trans 'Подтвердить заказ' %}</button>
-                    </form>
-
-                {% else %}
-                    <form method="post" >
-                    {% csrf_token %}
-                        <div style="margin-bottom:20px;">
-                            <input  class="delivery_operator"  type="submit"  name="name_delivery" value="nova-poshta"
-                                     style="background: url({% static 'logo/nova_poshta.webp' %}); background-size: 200px 54px;background-repeat: no-repeat;
-                                            background-position: center;  " >
-                            <input   class="delivery_operator" type="submit"  name="name_delivery" value="ukrposhta"
-                                     style="background: url({% static 'logo/ukrposhta.webp' %}); background-size: 200px 54px;background-repeat: no-repeat;
-                                            background-position: center; border: 2px solid #323C8C; border-radius: 23px;" >
-                        </div>
-                        <p class="login" >
-                            <input    type="text" placeholder={% trans 'Населенный пункт' %}  name="city-delivery" > </p>
-                        <p class="login" >
-                            <input    type="text" placeholder={% trans 'Индекс' %}  name="index-delivery" > </p>
-                        {% if form_error != '' %} <a style="color:yellow; "> {{form_error}}  </a>  <br>  {% endif %}
-                        <button class="submit" style="height:40px;; width:60%; margin-top:10px; border-radius:10px; "
-                                type="submit" name="done" value="{{name_delivery}}">{% trans 'Подтвердить заказа' %}</button>
-                    </form>
+                    <div class="align-center mb-1">
+                        {{ form.phone }}
+                    </div>
+                    {% endif %}
+                    <div class="align-center mb-1"> {{ form.delivery }} </div>
+                    <div class="align-center mb-1"> {{ form.city }} </div>
+                    <div class="align-center mb-1"> {{ form.department }} </div>
 
 
-                {% endif %}
 
-            {% else %}
-                <form method="post" >
-                {% csrf_token %}
-                    <input  class="delivery_operator"  type="submit"  name="name_delivery" value="nova-poshta"
-                             style="background: url({% static 'logo/nova_poshta.webp' %}); background-size: 200px 54px;background-repeat: no-repeat;
-                                    background-position: center; " >
-                    <input   class="delivery_operator" type="submit"  name="name_delivery" value="ukrposhta"
-                             style="background: url({% static 'logo/ukrposhta.webp' %}); background-size: 200px 54px;background-repeat: no-repeat;
-                                    background-position: center; " >
-                    </form>
-            {% endif %}
+                </div>
+                <div class="col-md-3" ></div>
+                <div class="col-md-3" ></div>
+                <input class="col-md-6 submit mt-2" style="height:40px; border-radius:10px;" name="done" type="submit" value={% trans 'Подтвердить заказа' %} />
+                <div class="col-md-3" ></div>
+            </form>
 
 
 
@@ -92,7 +80,18 @@
 
 
        </div>
+
+
+
     </div>
+    <div class="col-md-2 "   ></div>
+</div>
+
+</form>
+
+
+
+
 
 
 {% endblock %}
