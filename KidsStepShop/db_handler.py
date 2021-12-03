@@ -13,7 +13,7 @@ conn = psycopg2.connect(dbname='desbfre3o7mc3p', host='ec2-79-125-30-28.eu-west-
                         user="jaapeobazpotto",
                         password="f4630550268daa93fa418311c38690aadaf5f1c06c347961268f3094c066b663")
 cur = conn.cursor()
-heroku = False
+heroku = True
 supplier = {'berni.com.ua': 'b-'}
 
 lang = ['en', 'ru', 'uk']
@@ -175,12 +175,20 @@ def drop_status_order():
 def add_status_order():
     query_add_status = ''
     for s in status_dict:
+        if heroku:
+            query_add_status += 'INSERT INTO "KidsStepShop_statusorder" ( "id_status_order") ' "VALUES ('" + s + "'); "
         status_to_add = StatusOrder(id_status_order=s)
         status_to_add.save()
         for l in lang:
             status_to_add.set_current_language(l)
             status_to_add.status = status_dict[s][lang.index(l)]
             status_to_add.save()
+            if heroku:
+                query_add_status += 'INSERT INTO "KidsStepShop_statusorder_translation" ( "language_code", "status", "master_id") ' \
+                                  + "VALUES ('" + l + "', '" + status_dict[s][lang.index(l)] + "', '" + s + "'); "
+    if heroku:
+        cur.execute(query_add_status)
+        conn.commit()
 
 
 
