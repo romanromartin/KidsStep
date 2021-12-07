@@ -307,7 +307,7 @@ def add_footwear():
         id_cat.append(category.attrib["id"])
     for id_ in id_cat:
         offer = tree.findall("shop/offers/offer[categoryId='" + id_ + "']")
-        for of in offer[:20]:
+        for of in offer[:30]:
             gender_list = []
             size_list = []
             color_list = []
@@ -346,12 +346,12 @@ def add_footwear():
                 cur.execute(query_id)
                 qq = cur.fetchone()[0]
                 query_add += 'INSERT INTO "KidsStepShop_footwear" ' \
-                             '( "id",  "popular", "price", "footwear_brend_id", "footwear_type_id") ' \
+                             '( "id",  "popular", "price", "footwear_brend_id", "footwear_type_id", "in_use") ' \
                              + "VALUES ('" + id_ + "', '" \
                              + '0' + "', '" \
                              + of.find('oldprice').text + "', '" \
                              + str(qq) + "', '" \
-                             + ins_type + "'); "
+                             + ins_type + "', '" + "True" + "'); "
             foot = Footwear(id=id_,
                             popular=0,
                             price=of.find('oldprice').text,
